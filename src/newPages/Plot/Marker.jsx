@@ -10,7 +10,7 @@ import { API_URI } from "../../utils/Global/main";
 import { useRef } from "react";
 import Loader from "../../Loader/Loader";
 
-const Marker = ({token}) => {
+const Marker = ({ token }) => {
   const { id } = useParams();
   const [colony, setColony] = useState(null);
   const [mapImage, setMapImage] = useState(null);
@@ -19,6 +19,8 @@ const Marker = ({token}) => {
   const [selectedColor, setSelectedColor] = useState("green");
   const [pendingPlot, setPendingPlot] = useState(null);
   const [plots, setPlots] = useState([]);
+  const [scale, setScale] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
 
   const stageRef = useRef();
 
@@ -57,25 +59,42 @@ const Marker = ({token}) => {
   const handleSaveColonyMap = async () => {
     if (!stageRef.current) return;
 
-    const uri = stageRef.current.toDataURL({ pixelRatio: 2 });
-    const blob = await (await fetch(uri)).blob();
+    const stage = stageRef.current;
 
-    const formData = new FormData();
-    formData.append("image", blob);
-    setLoading(true);
-    try {
-      await axios.post(`${API_URI}/api/v1/colony/upload/${id}`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
+    const oldScale = scale;
+    const oldPosition = position;
+
+    setScale(1);
+    setPosition({ x: 0, y: 0 });
+
+    // Wait for React render
+    setTimeout(async () => {
+      const uri = stage.toDataURL({
+        pixelRatio: 2,
       });
 
-      alert("Colony Map Updated Successfully");
-    } catch (error) {
-      console.error(error);
-    }
-    setLoading(false);
+      const blob = await (await fetch(uri)).blob();
+      const formData = new FormData();
+      formData.append("image", blob);
+
+      setLoading(true);
+      try {
+        await axios.post(`${API_URI}/api/v1/colony/upload/${id}`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+
+        alert("Colony Map Updated Successfully");
+      } catch (error) {
+        console.error(error);
+      }
+      setLoading(false);
+
+      setScale(oldScale);
+      setPosition(oldPosition);
+    }, 100);
   };
 
   return (
@@ -95,6 +114,10 @@ const Marker = ({token}) => {
         selectedColor={selectedColor}
         plots={plots}
         setPendingPlot={setPendingPlot}
+        scale={scale}
+        setScale={setScale}
+        position={position}
+        setPosition={setPosition}
       />
 
       <button
