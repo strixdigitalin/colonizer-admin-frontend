@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Gayathri&family=Outfit:wght@400;500&family=Poppins:wght@400;500;600;700;800;900&family=Sawarabi+Mincho&family=Source+Sans+3:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600&family=Titillium+Web:wght@400;600;700;900&family=Varela+Round&display=swap');
+
+* {
+  --dark-100: #525155;
+  --dark-200: #27282b;
+  --dark-400: #000000;
+  --light-100: #eeedef;
+  --light-200: #f3f2f5;
+  --light-300: #f9f7fb;
+  --light-400: #ffffff;
+  --purple-200: #50459f;
+  --purple-300: #660eb8;
+  --indigo-100: #e6eeff;
+  --indigo-200: #0040cc;
+  --indigo-300: #0d358b;
+  --indigo-400: #25559c;
+  --yellow-100: #fffbec;
+  --yellow-200: #e9b700;
+  --yellow-300: #ff7901;
+  --red-100: #ffefef;
+  --red-200: #d40000;
+  --red-300: #c10000;
+  --green-100: #f3fffa;
+  --green-200: #0de488;
+  --green-300: #00b43b;
+  --green-400: #008000;
+  --green-500: #006400;
+  --gray-100: #e1e1e1;
+  --gray-200: #a9a9a9;
+  --gray-300: #8f8f8f;
+  --gray-400: #6f6f6f;
+  --gray-500: #5a5a5a;
+  --gray-600: #4d4d4d;
+  --yellow-1: #fdf7e7;
+  --yellow-2: #c28f21;
+  --yellow-3: #fff0be;
+  --orange-1: #fff7ec;
+  --orange-2: #fc9701;
+  --orange-3: #ffe1be;
+  --indigo-1: #ecf3fe;
+  --indigo-2: #2f62d3;
+  --indigo-3: #bacbff;
+  --indigo1-1: #edf4ff;
+  --indigo1-2: #25559c;
+  --indigo2-1: #f0faff;
+  --indigo2-2: #33bfff;
+  --green-1: #e7faee;
+  --green-2: #329f5d;
+  --green-3: #d6f3e2;
+  --pink-1: #ffeef5;
+  --pink-2: #cf377a;
+  --pink-3: #ffbad8;
+  --purple-1: #f5eefe;
+  --purple-2: #8841c3;
+  --purple-3: #debfff;
+  --gray-1: #b9bfcd;
+  --gray-2: #66707f;
+  --red-1: #ffefef;
+  --red-2: #d40000;
+  --red-3: #ffb6b6;
+
+
+
+  --primary-orange: #FF5E1B;
+  --primary-yellow: #FBCA0E;
+  --primary-indigo: #3071FE;
+  --primary-green: #03C4A9;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  font-family: 'Poppins', sans-serif;
+}
+
+.App {
+  max-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+*::-webkit-scrollbar {
+  width: 4px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #ffffffbd;
+}
+
+.table-scroll::-webkit-scrollbar-thumb{
+  background-color: var(--gray-200);
+}
+
+.css-g2tram-MuiToolbar-root,
+.css-80pr5n-MuiPaper-root {
+  box-shadow: none !important;
+}
+
+.css-80pr5n-MuiPaper-root {
+  /* border: 1px solid var(--gray-300); */
+  /* border-radius: 10px !important; */
+  background-color: white !important;
+}
+
+.css-1omuo8w-MuiToolbar-root {
+  background-color: white !important;
+  /* border-radius: 10px 10px 0px 0px !important; */
+}
+
+.css-78trlr-MuiButtonBase-root-MuiIconButton-root{
+  background-color: var(--gray-50) !important;
+}
+
+.css-1vo6kym-MuiButtonBase-root-MuiIconButton-root{
+  color: var(--gray-100) !important;
+}
+th {
+  color: var(--gray-500) !important;
+  font-weight: 500 !important;
+  font-size: 0.8rem !important;
+  background-color: var(--gray-100) !important;
+}
+
+.css-g2tram-MuiToolbar-root,
+.css-16253fi-MuiTablePagination-root,
+.css-6vypie-MuiInputBase-root-MuiTablePagination-select,
+.css-pqjvzy-MuiSvgIcon-root-MuiSelect-icon {
+  background-color: var(--gray-100) !important;
+  color: var(--gray-500) !important;
+}
