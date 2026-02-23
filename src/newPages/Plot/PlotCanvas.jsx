@@ -24,6 +24,7 @@ const PlotCanvas = ({
   scale,
   position,
   setPosition,
+  handleDelete
 }) => {
   const [drawing, setDrawing] = useState(false);
   const [newRect, setNewRect] = useState(null);
@@ -45,7 +46,7 @@ const PlotCanvas = ({
       y: prev.y + dy,
     }));
   };
-  
+
   const getRelativePointerPosition = () => {
     const stage = stageRef.current;
     const pointer = stage.getPointerPosition();
@@ -86,7 +87,6 @@ const PlotCanvas = ({
 
   return (
     <div className="border p-2">
-      {/* 🔹 Controls */}
       <div className="flex flex-wrap gap-2 mb-2">
         <button onClick={zoomIn} className="px-3 py-1 bg-gray-200">
           Zoom +
@@ -116,7 +116,7 @@ const PlotCanvas = ({
               <KonvaImage image={mapImage} width={900} height={600} />
             )}
 
-            {plots.map((plot) => (
+            {/* {plots.map((plot) => (
               <React.Fragment key={plot.id}>
                 <Rect
                   x={plot.x}
@@ -128,6 +128,26 @@ const PlotCanvas = ({
                   stroke="black"
                 />
                 <Text text={plot.plotId} x={plot.x} y={plot.y} fontSize={12} />
+              </React.Fragment>
+            ))} */}
+            {plots.map((plot) => (
+              <React.Fragment key={plot._id}>
+                <Rect
+                  x={plot.coordinates?.x}
+                  y={plot.coordinates?.y}
+                  width={plot.coordinates?.width}
+                  height={plot.coordinates?.height}
+                  fill={STATUS_COLOR[plot.status] || "yellow"}
+                  opacity={0.6}
+                  stroke="black"
+                  onClick={() => handleDelete(plot._id)}
+                />
+                {/* <Text
+                  text={plot.plotNumber}
+                  x={plot.coordinates?.x}
+                  y={plot.coordinates?.y}
+                  fontSize={12}
+                /> */}
               </React.Fragment>
             ))}
 

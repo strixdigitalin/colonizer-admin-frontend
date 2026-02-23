@@ -35,12 +35,12 @@ export const menuItems = [
         link: '/colony',
         type: 'item'
     },
-    {
-        icon: <PiTreeStructure />,
-        title: "Marker",
-        link: '/marker',
-        type: 'item'
-    },
+    // {
+    //     icon: <PiTreeStructure />,
+    //     title: "Marker",
+    //     link: '/marker',
+    //     type: 'item'
+    // },
     
 ];
 
