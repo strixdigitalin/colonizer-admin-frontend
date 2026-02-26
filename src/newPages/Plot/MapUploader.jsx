@@ -5,20 +5,12 @@ const MapUploader = ({ setMapImage }) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const img = new window.Image();
-      img.src = reader.result;
-      img.onload = () => setMapImage(img);
-    };
-    reader.readAsDataURL(file);
+    const img = new window.Image();
+    img.src = URL.createObjectURL(file);
+    img.onload = () => setMapImage(img);
   };
 
-  return (
-    <div className="my-4">
-      <input type="file" accept="image/*" onChange={handleUpload} />
-    </div>
-  );
+  return <input type="file" accept="image/*" onChange={handleUpload} />;
 };
 
 export default MapUploader;

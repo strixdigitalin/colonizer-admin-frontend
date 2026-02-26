@@ -10,9 +10,9 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 const STATUS_COLOR = {
-  available: "yellow",
+  available: "green",
   sold: "red",
-  hold: "green",
+  hold: "yellow",
 };
 
 const PlotCanvas = ({
@@ -24,7 +24,7 @@ const PlotCanvas = ({
   scale,
   position,
   setPosition,
-  handleDelete
+  handleDelete,
 }) => {
   const [drawing, setDrawing] = useState(false);
   const [newRect, setNewRect] = useState(null);
@@ -130,7 +130,7 @@ const PlotCanvas = ({
                 <Text text={plot.plotId} x={plot.x} y={plot.y} fontSize={12} />
               </React.Fragment>
             ))} */}
-            {plots.map((plot) => (
+            {/* {plots.map((plot) => (
               <React.Fragment key={plot._id}>
                 <Rect
                   x={plot.coordinates?.x}
@@ -142,14 +142,46 @@ const PlotCanvas = ({
                   stroke="black"
                   onClick={() => handleDelete(plot._id)}
                 />
-                {/* <Text
-                  text={plot.plotNumber}
-                  x={plot.coordinates?.x}
-                  y={plot.coordinates?.y}
-                  fontSize={12}
-                /> */}
               </React.Fragment>
-            ))}
+            ))} */}
+            {plots.map((plot) => {
+              const { x, y, width, height } = plot.coordinates || {};
+              const fontSize = Math.min(6, Math.min(width, height) / 1.4);
+              const strokeWidth = Math.max(
+                0.5,
+                Math.min(width, height) / 25,
+              );
+              return (
+                <React.Fragment key={plot._id}>
+                  {/* Plot Box */}
+                  <Rect
+                    x={x}
+                    y={y}
+                    width={width}
+                    height={height}
+                    fill={STATUS_COLOR[plot.status] || "yellow"}
+                    opacity={1}
+                    stroke="black"
+                    strokeWidth={strokeWidth}
+                    onClick={() => handleDelete(plot._id)}
+                  />
+
+                  {/* Plot Text */}
+                  <Text
+                    text={`${plot.plotNumber}`}
+                    x={x}
+                    y={y}
+                    width={width}
+                    height={height}
+                    align="center"
+                    verticalAlign="middle"
+                    fontSize={fontSize}
+                    fill="black"
+                    wrap="word"
+                  />
+                </React.Fragment>
+              );
+            })}
 
             {newRect && <Rect {...newRect} stroke="blue" dash={[4, 4]} />}
           </Group>

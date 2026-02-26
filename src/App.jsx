@@ -27,6 +27,7 @@ import CustomerList from "./newPages/Customer/CustomerList.jsx";
 import ColonyList from "./newPages/Colony/ColonyList.jsx";
 import ColonyAddEdit from "./newPages/Colony/ColonyAddEdit.jsx";
 import Marker from "./newPages/Plot/Marker.jsx";
+import MainMarker from "./newPages/Plot/MainMarker.jsx";
 
 // Get subadmin permissions from localStorage
 const getSubadminPermissions = () => {
@@ -73,7 +74,7 @@ function App() {
           <Route path="colony" element={<ColonyList token={adminToken} routepath="/" />} />
           <Route path="colony/add" element={<ColonyAddEdit token={adminToken} routepath="/" />} />
           <Route path="colony/edit/:id" element={<ColonyAddEdit token={adminToken} routepath="/" />} />
-          <Route path="colony/map/:id" element={<Marker token={adminToken} routepath="/" />} />
+          <Route path="colony/map/:id" element={<MainMarker token={adminToken} routepath="/" />} />
 
           {/* ==========new Routes================== */}
           <Route path="orders" element={<OrderList token={adminToken} routepath="/" />} />
