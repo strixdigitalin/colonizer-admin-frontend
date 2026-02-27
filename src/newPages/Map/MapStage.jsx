@@ -12,7 +12,9 @@ const MapStage = ({
   position,
   handleWheel,
   children,
-  onStageClick,
+  onStageMouseDown,
+  onStageMouseMove,
+  onStageMouseUp,
 }) => {
   return (
     <div
@@ -32,10 +34,34 @@ const MapStage = ({
         scaleX={scale}
         scaleY={scale}
         onWheel={handleWheel}
-        onMouseDown={(e) => {
-          if (e.target === e.target.getStage()) {
+        onContextMenu={(e) => {
+          // prevent default right-click menu on stage
+          e.evt.preventDefault();
+          if (e.target === e.target.getStage() && onStageRightClick) {
             const pointer = stageRef.current.getPointerPosition();
-            onStageClick(pointer.x, pointer.y);
+            onStageRightClick(pointer.x, pointer.y);
+          }
+        }}
+        onMouseDown={(e) => {
+          // only treat left button
+          if (e.evt.button !== 0) return;
+          if (e.target === e.target.getStage() && onStageMouseDown) {
+            const pointer = stageRef.current.getPointerPosition();
+            onStageMouseDown(pointer.x, pointer.y);
+          }
+        }}
+        onMouseMove={(e) => {
+          if (e.evt.button !== 0) return;
+          if (e.target === e.target.getStage() && onStageMouseMove) {
+            const pointer = stageRef.current.getPointerPosition();
+            onStageMouseMove(pointer.x, pointer.y);
+          }
+        }}
+        onMouseUp={(e) => {
+          if (e.evt.button !== 0) return;
+          if (e.target === e.target.getStage() && onStageMouseUp) {
+            const pointer = stageRef.current.getPointerPosition();
+            onStageMouseUp(pointer.x, pointer.y);
           }
         }}
       >
