@@ -53,7 +53,7 @@ const ShapeToolbar = ({
         >
           Line
         </button>
-        <button
+        {/* <button
           onClick={() => setSelectedTool("pencil")}
           className={
             selectedTool === "pencil"
@@ -62,8 +62,8 @@ const ShapeToolbar = ({
           }
         >
           Pencil
-        </button>
-        <button
+        </button> */}
+        {/* <button
           onClick={() => setSelectedTool("rect-draw")}
           className={
             selectedTool === "rect-draw"
@@ -72,7 +72,7 @@ const ShapeToolbar = ({
           }
         >
           Rect Draw
-        </button>
+        </button> */}
         <button
           onClick={() => setSelectedTool("text")}
           className={
