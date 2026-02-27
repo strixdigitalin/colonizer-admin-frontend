@@ -251,6 +251,7 @@ const MainMarker = ({ token }) => {
         selectedColor={selectedColor}
         setSelectedColor={setSelectedColor}
       /> */}
+      
 
       <PlotCanvas
         stageRef={stageRef}
