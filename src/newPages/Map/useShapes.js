@@ -71,12 +71,25 @@ const useShapes = () => {
 
   const pasteCopied = (offset = { x: 20, y: 20 }) => {
     if (!copiedShape) return;
-    const newShape = {
+    const newX = copiedShape.x + offset.x;
+    const newY = copiedShape.y + offset.y;
+    const dx = newX - copiedShape.x;
+    const dy = newY - copiedShape.y;
+
+    let newShape = {
       ...copiedShape,
       id: uuidv4(),
-      x: copiedShape.x + offset.x,
-      y: copiedShape.y + offset.y,
+      x: newX,
+      y: newY,
     };
+
+    // For line/polygon shapes, adjust points array along with x/y
+    if (copiedShape.type === "line" && copiedShape.points) {
+      newShape.points = copiedShape.points.map((p, idx) =>
+        idx % 2 === 0 ? p + dx : p + dy,
+      );
+    }
+
     setShapes((prev) => [...prev, newShape]);
     setSelectedId(newShape.id);
   };

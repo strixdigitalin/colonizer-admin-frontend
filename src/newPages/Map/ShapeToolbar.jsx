@@ -4,10 +4,13 @@ const ShapeToolbar = ({
   onDelete,
   onCopy,
   onPaste,
+  onExport,
   selectedShape,
   onColorChange,
   onFontSizeChange,
   onFontFamilyChange,
+  includeBackground,
+  onBackgroundToggle,
 }) => {
   return (
     <div className="flex gap-2 mb-3 items-center">
@@ -112,6 +115,12 @@ const ShapeToolbar = ({
         >
           Delete
         </button>
+        <button
+          onClick={onExport}
+          className="px-3 py-1 bg-purple-500 text-white rounded"
+        >
+          Export
+        </button>
       </div>
 
       <div className="flex items-center gap-2 ml-4">
@@ -154,6 +163,20 @@ const ShapeToolbar = ({
           />
         </div>
       )}
+
+      <div className="flex items-center gap-2 ml-4 border-l pl-4">
+        <label className="text-sm">
+          <input
+            type="checkbox"
+            checked={includeBackground}
+            onChange={(e) =>
+              onBackgroundToggle && onBackgroundToggle(e.target.checked)
+            }
+            className="mr-2"
+          />
+          Include Background
+        </label>
+      </div>
     </div>
   );
 };

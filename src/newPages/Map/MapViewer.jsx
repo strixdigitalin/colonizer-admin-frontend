@@ -37,10 +37,37 @@ const MapViewer = ({ token }) => {
 
   const [drawingPoints, setDrawingPoints] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
+  const [includeBackground, setIncludeBackground] = useState(true);
 
   // rectangle draw state
   const [rectStart, setRectStart] = useState(null);
   const [rectPreview, setRectPreview] = useState(null);
+
+  const exportCanvas = () => {
+    if (!stageRef.current) return;
+    const stage = stageRef.current;
+
+    // Toggle background visibility based on user choice
+    const bgLayer = stage.children[0];
+    if (bgLayer) {
+      bgLayer.visible(!includeBackground);
+      stage.draw();
+    }
+
+    const dataURL = stage.toDataURL({ pixelRatio: 2 });
+
+    // restore background visibility
+    if (bgLayer) {
+      bgLayer.visible(true);
+      stage.draw();
+    }
+
+    // download the image
+    const link = document.createElement("a");
+    link.href = dataURL;
+    link.download = `canvas-export-${Date.now()}.png`;
+    link.click();
+  };
 
   // keyboard shortcuts (Delete, Ctrl/Cmd+C, Ctrl/Cmd+V)
   React.useEffect(() => {
@@ -77,6 +104,7 @@ const MapViewer = ({ token }) => {
         onDelete={() => selectedId && removeShape(selectedId)}
         onCopy={() => selectedId && copySelected(selectedId)}
         onPaste={() => pasteCopied()}
+        onExport={exportCanvas}
         selectedShape={shapes.find((s) => s.id === selectedId)}
         onColorChange={(color) =>
           selectedId && updateShape(selectedId, { fill: color, stroke: color })
@@ -87,6 +115,8 @@ const MapViewer = ({ token }) => {
         onFontFamilyChange={(family) =>
           selectedId && updateShape(selectedId, { fontFamily: family })
         }
+        includeBackground={includeBackground}
+        onBackgroundToggle={setIncludeBackground}
       />
 
       <MapStage
