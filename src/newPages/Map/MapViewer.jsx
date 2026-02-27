@@ -81,6 +81,12 @@ const MapViewer = ({ token }) => {
         onColorChange={(color) =>
           selectedId && updateShape(selectedId, { fill: color, stroke: color })
         }
+        onFontSizeChange={(size) =>
+          selectedId && updateShape(selectedId, { fontSize: size })
+        }
+        onFontFamilyChange={(family) =>
+          selectedId && updateShape(selectedId, { fontFamily: family })
+        }
       />
 
       <MapStage

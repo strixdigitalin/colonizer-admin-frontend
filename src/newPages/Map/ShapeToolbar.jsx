@@ -6,6 +6,8 @@ const ShapeToolbar = ({
   onPaste,
   selectedShape,
   onColorChange,
+  onFontSizeChange,
+  onFontFamilyChange,
 }) => {
   return (
     <div className="flex gap-2 mb-3 items-center">
@@ -121,6 +123,37 @@ const ShapeToolbar = ({
           className="w-10 h-8 p-0 border-0"
         />
       </div>
+
+      {selectedShape?.type === "text" && (
+        <div className="flex items-center gap-2 ml-4 border-l pl-4">
+          <label className="text-sm">Font:</label>
+          <select
+            value={selectedShape?.fontFamily || "Arial"}
+            onChange={(e) =>
+              onFontFamilyChange && onFontFamilyChange(e.target.value)
+            }
+            className="px-2 py-1 border rounded text-sm"
+          >
+            <option value="Arial">Arial</option>
+            <option value="Times New Roman">Times New Roman</option>
+            <option value="Courier New">Courier New</option>
+            <option value="Verdana">Verdana</option>
+            <option value="Georgia">Georgia</option>
+          </select>
+
+          <label className="text-sm">Size:</label>
+          <input
+            type="number"
+            min="8"
+            max="72"
+            value={selectedShape?.fontSize || 20}
+            onChange={(e) =>
+              onFontSizeChange && onFontSizeChange(parseInt(e.target.value))
+            }
+            className="w-16 px-2 py-1 border rounded text-sm"
+          />
+        </div>
+      )}
     </div>
   );
 };

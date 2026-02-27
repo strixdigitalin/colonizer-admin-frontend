@@ -3,9 +3,14 @@ import { v4 as uuidv4 } from "uuid";
 
 const useShapes = () => {
   const [shapes, setShapes] = useState([]);
-  const [selectedTool, setSelectedTool] = useState("normal");
+  const [selectedTool, _setSelectedTool] = useState("normal");
   const [selectedId, setSelectedId] = useState(null);
   const [copiedShape, setCopiedShape] = useState(null);
+
+  const setSelectedTool = (tool) => {
+    setSelectedId(null);
+    _setSelectedTool(tool);
+  };
 
   const addShape = (x, y) => {
     const base = {
@@ -112,6 +117,21 @@ const useShapes = () => {
     setSelectedId(rect.id);
   };
 
+  const addText = (x, y, text = "Text", options = {}) => {
+    const txt = {
+      id: uuidv4(),
+      x,
+      y,
+      type: "text",
+      text,
+      fontSize: options.fontSize || 20,
+      fontFamily: options.fontFamily || "Arial",
+      fill: options.fill || "#000",
+    };
+    setShapes((prev) => [...prev, txt]);
+    setSelectedId(txt.id);
+  };
+
   const selectShape = (id) => {
     setSelectedId(id);
   };
@@ -129,6 +149,7 @@ const useShapes = () => {
     pasteCopied,
     addFreehand,
     addRect,
+    addText,
   };
 };
 
