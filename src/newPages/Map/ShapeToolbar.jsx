@@ -47,6 +47,16 @@ const ShapeToolbar = ({
         >
           Custom
         </button>
+        <button
+          onClick={() => setSelectedTool("polygon")}
+          className={
+            selectedTool === "polygon"
+              ? "bg-blue-500 text-white px-3 py-1"
+              : "px-3 py-1 bg-gray-200"
+          }
+        >
+          Polygon
+        </button>
 
         {/* <button
           onClick={() => setSelectedTool("line")}
@@ -160,6 +170,51 @@ const ShapeToolbar = ({
               onFontSizeChange && onFontSizeChange(parseInt(e.target.value))
             }
             className="w-16 px-2 py-1 border rounded text-sm"
+          />
+        </div>
+      )}
+
+      {(selectedShape?.type === "polygon" ||
+        selectedShape?.type === "line") && (
+        <div className="flex items-center gap-2 ml-4 border-l pl-4">
+          <label className="text-sm">Fill:</label>
+          <input
+            type="color"
+            value={
+              selectedShape?.fill?.startsWith("rgba")
+                ? "#2b6cb0"
+                : selectedShape?.fill || "#2b6cb0"
+            }
+            onChange={(e) => {
+              const hex = e.target.value;
+              // Convert hex to rgba with 0.3 opacity
+              const r = parseInt(hex.slice(1, 3), 16);
+              const g = parseInt(hex.slice(3, 5), 16);
+              const b = parseInt(hex.slice(5, 7), 16);
+              onColorChange && onColorChange(`rgba(${r},${g},${b},0.3)`);
+            }}
+            className="w-10 h-8 p-0 border-0"
+          />
+
+          <label className="text-sm">Opacity:</label>
+          <input
+            type="range"
+            min="0"
+            max="100"
+            defaultValue="30"
+            onChange={(e) => {
+              const opacity = e.target.value / 100;
+              // Extract current fill color
+              const fill = selectedShape?.fill || "rgba(43,108,176,0.3)";
+              const match = fill.match(/rgba?\((\d+),(\d+),(\d+)/);
+              if (match) {
+                onColorChange &&
+                  onColorChange(
+                    `rgba(${match[1]},${match[2]},${match[3]},${opacity})`,
+                  );
+              }
+            }}
+            className="w-20"
           />
         </div>
       )}

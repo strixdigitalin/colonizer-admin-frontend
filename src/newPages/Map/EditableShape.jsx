@@ -161,6 +161,56 @@ const EditableShape = ({
     );
   }
 
+  if (shape.type === "polygon") {
+    return (
+      <>
+        <Line
+          points={shape.points}
+          ref={shapeRef}
+          stroke={shape.stroke}
+          strokeWidth={shape.strokeWidth || 2}
+          closed={true}
+          fill={shape.fill}
+          draggable
+          onClick={() => onSelect(shape.id)}
+          onTap={() => onSelect(shape.id)}
+          onDragEnd={(e) => {
+            const dx = e.target.x();
+            const dy = e.target.y();
+            updateShape(shape.id, { x: dx, y: dy });
+          }}
+          onTransformEnd={(e) => {
+            const node = shapeRef.current;
+            const scaleX = node.scaleX();
+            const scaleY = node.scaleY();
+            node.scaleX(1);
+            node.scaleY(1);
+            const newPoints = shape.points.map((p, idx) =>
+              idx % 2 === 0 ? p * scaleX : p * scaleY,
+            );
+            updateShape(shape.id, {
+              points: newPoints,
+              x: node.x(),
+              y: node.y(),
+            });
+          }}
+        />
+        {isSelected && (
+          <Transformer
+            ref={trRef}
+            rotateEnabled
+            enabledAnchors={[
+              "top-left",
+              "top-right",
+              "bottom-left",
+              "bottom-right",
+            ]}
+          />
+        )}
+      </>
+    );
+  }
+
   return (
     <>
       <Rect

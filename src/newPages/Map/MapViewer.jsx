@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Line } from "react-konva";
+import { Line, Circle } from "react-konva";
 import { useParams } from "react-router-dom";
 import useMapImage from "./useMapImage";
 import useZoom from "./useZoom";
@@ -15,6 +15,9 @@ const MapViewer = ({ token }) => {
   const stageRef = useRef();
 
   const { mapImage, loading } = useMapImage(colonyId, token);
+  const [polygonPoints, setPolygonPoints] = useState([]);
+  const [mousePos, setMousePos] = useState(null); 
+  const SNAP_DISTANCE = 20;
 
   const {
     shapes,
@@ -33,6 +36,7 @@ const MapViewer = ({ token }) => {
     addLinkedText,
     updateLinkedText,
     removeLinkedText,
+    addPolygon,
   } = useShapes();
 
   const { scale, position, zoomIn, zoomOut, resetZoom, handleWheel } =
@@ -110,7 +114,17 @@ const MapViewer = ({ token }) => {
         onExport={exportCanvas}
         selectedShape={shapes.find((s) => s.id === selectedId)}
         onColorChange={(color) =>
-          selectedId && updateShape(selectedId, { fill: color, stroke: color })
+          // selectedId && updateShape(selectedId, { fill: color, stroke: color })
+          {
+            if (!selectedId) return;
+            const shape = shapes.find((s) => s.id === selectedId);
+            if (shape?.type === "polygon") {
+              // Polygon ke liye fill alag se update karo, stroke alag
+              updateShape(selectedId, { fill: color });
+            } else {
+              updateShape(selectedId, { fill: color, stroke: color });
+            }
+          }
         }
         onFontSizeChange={(size) =>
           selectedId && updateShape(selectedId, { fontSize: size })
@@ -161,6 +175,33 @@ const MapViewer = ({ token }) => {
             return;
           }
 
+          if (selectedTool === "polygon") {
+            if (polygonPoints.length >= 4) {
+              // Check karo kya pehle point ke paas click kiya
+              const firstX = polygonPoints[0];
+              const firstY = polygonPoints[1];
+
+              // adjust threshold for current zoom so the hit area stays
+              // approximately SNAP_DISTANCE pixels on screen
+              const snapDist = SNAP_DISTANCE / scale;
+              const dist = Math.hypot(x - firstX, y - firstY);
+
+              if (dist <= snapDist) {
+                // Close the polygon!
+                addPolygon(polygonPoints, {
+                  stroke: "#2b6cb0",
+                  fill: "rgba(43,108,176,0.15)",
+                });
+                setPolygonPoints([]); // reset
+                setMousePos(null);
+                return;
+              }
+            }
+            // Naya point add karo
+            setPolygonPoints((prev) => [...prev, x, y]);
+            return;
+          }
+
           addShape(x, y);
         }}
         onStageMouseMove={(x, y) => {
@@ -175,6 +216,11 @@ const MapViewer = ({ token }) => {
             const w = x - sx;
             const h = y - sy;
             setRectPreview({ x: sx, y: sy, width: w, height: h });
+            return;
+          }
+
+          if (selectedTool === "polygon") {
+            setMousePos({ x, y });
             return;
           }
         }}
@@ -249,6 +295,51 @@ const MapViewer = ({ token }) => {
             lineJoin="round"
           />
         )}
+        {selectedTool === "polygon" &&
+          polygonPoints.length >= 2 &&
+          mousePos && (
+            <>
+              {/* Confirmed lines + live preview line */}
+              <Line
+                points={[...polygonPoints, mousePos.x, mousePos.y]}
+                stroke="#2b6cb0"
+                strokeWidth={2}
+                dash={[6, 3]}
+                lineCap="round"
+                lineJoin="round"
+                listening={false} // so that the preview doesn't intercept clicks
+              />
+
+              {/* Placed points (dots) */}
+              {polygonPoints.reduce((acc, val, idx) => {
+                if (idx % 2 === 0) {
+                  const isFirst = idx === 0;
+                  const px = val;
+                  const py = polygonPoints[idx + 1];
+                  const snapDist = SNAP_DISTANCE / scale;
+                  const nearFirst =
+                    isFirst &&
+                    mousePos &&
+                    Math.hypot(mousePos.x - px, mousePos.y - py) <=
+                      snapDist;
+
+                  acc.push(
+                    <Circle
+                      key={idx}
+                      x={px}
+                      y={py}
+                      radius={isFirst ? 8 : 5}
+                      fill={nearFirst ? "#22c55e" : "white"}
+                      stroke={nearFirst ? "#16a34a" : "#2b6cb0"}
+                      strokeWidth={2}
+                      listening={false}
+                    />,
+                  );
+                }
+                return acc;
+              }, [])}
+            </>
+          )}
       </MapStage>
     </div>
   );

@@ -165,6 +165,23 @@ const useShapes = () => {
     );
   };
 
+  const addPolygon = (points = [], options = {}) => {
+    if (!points || points.length < 6) return; // minimum 3 points
+    const shape = {
+      id: uuidv4(),
+      x: 0,
+      y: 0,
+      type: "polygon",
+      points,
+      stroke: options.stroke || "#2b6cb0",
+      strokeWidth: options.strokeWidth || 2,
+      fill: options.fill || "rgba(43,108,176,0.15)",
+      closed: true,
+    };
+    setShapes((prev) => [...prev, shape]);
+    setSelectedId(shape.id);
+  };
+
   const updateLinkedText = (shapeId, text) => {
     setShapes((prev) =>
       prev.map((shape) =>
@@ -210,6 +227,7 @@ const useShapes = () => {
     addLinkedText,
     updateLinkedText,
     removeLinkedText,
+    addPolygon,
   };
 };
 
