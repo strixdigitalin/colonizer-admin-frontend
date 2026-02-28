@@ -230,7 +230,7 @@ const EditableShape = ({
           fill={shape.linkedText.fill || "#000"}
           align="center"
           verticalAlign="middle"
-          rotation={0}
+          rotation={shape.rotation}
           listening={false}
           onDblClick={() => {
             const newText = window.prompt("Edit text", shape.linkedText.text);
