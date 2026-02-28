@@ -30,6 +30,9 @@ const MapViewer = ({ token }) => {
     addFreehand,
     addRect,
     addText,
+    addLinkedText,
+    updateLinkedText,
+    removeLinkedText,
   } = useShapes();
 
   const { scale, position, zoomIn, zoomOut, resetZoom, handleWheel } =

@@ -145,6 +145,50 @@ const useShapes = () => {
     setSelectedId(txt.id);
   };
 
+  const addLinkedText = (shapeId, text = "", options = {}) => {
+    setShapes((prev) =>
+      prev.map((shape) =>
+        shape.id === shapeId
+          ? {
+              ...shape,
+              linkedText: {
+                text: text || "",
+                fontSize: options.fontSize || 16,
+                fontFamily: options.fontFamily || "Arial",
+                fill: options.fill || "#000",
+                offsetX: options.offsetX || 0,
+                offsetY: options.offsetY || 10,
+              },
+            }
+          : shape,
+      ),
+    );
+  };
+
+  const updateLinkedText = (shapeId, text) => {
+    setShapes((prev) =>
+      prev.map((shape) =>
+        shape.id === shapeId
+          ? {
+              ...shape,
+              linkedText: {
+                ...shape.linkedText,
+                text,
+              },
+            }
+          : shape,
+      ),
+    );
+  };
+
+  const removeLinkedText = (shapeId) => {
+    setShapes((prev) =>
+      prev.map((shape) =>
+        shape.id === shapeId ? { ...shape, linkedText: null } : shape,
+      ),
+    );
+  };
+
   const selectShape = (id) => {
     setSelectedId(id);
   };
@@ -163,6 +207,9 @@ const useShapes = () => {
     addFreehand,
     addRect,
     addText,
+    addLinkedText,
+    updateLinkedText,
+    removeLinkedText,
   };
 };
 

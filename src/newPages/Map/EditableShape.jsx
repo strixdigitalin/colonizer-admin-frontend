@@ -177,6 +177,25 @@ const EditableShape = ({
         draggable
         onClick={() => onSelect(shape.id)}
         onTap={() => onSelect(shape.id)}
+        onDblClick={() => {
+          const txt = window.prompt(
+            "Add text to shape",
+            shape.linkedText?.text || "",
+          );
+          if (txt != null) {
+            updateShape(shape.id, {
+              linkedText: {
+                ...shape.linkedText,
+                text: txt,
+                fontSize: shape.linkedText?.fontSize || 16,
+                fontFamily: shape.linkedText?.fontFamily || "Arial",
+                fill: shape.linkedText?.fill || "#000",
+                offsetX: shape.linkedText?.offsetX || 0,
+                offsetY: shape.linkedText?.offsetY || 10,
+              },
+            });
+          }
+        }}
         onDragEnd={(e) => {
           updateShape(shape.id, { x: e.target.x(), y: e.target.y() });
         }}
@@ -198,6 +217,34 @@ const EditableShape = ({
           });
         }}
       />
+
+      {shape.linkedText && shape.linkedText.text && (
+        <Text
+          text={shape.linkedText.text}
+          x={shape.x}
+          y={shape.y}
+          width={shape.width}
+          height={shape.height}
+          fontSize={Math.max(8, Math.min(shape.width, shape.height) * 0.25)}
+          fontFamily={shape.linkedText.fontFamily || "Arial"}
+          fill={shape.linkedText.fill || "#000"}
+          align="center"
+          verticalAlign="middle"
+          rotation={0}
+          listening={false}
+          onDblClick={() => {
+            const newText = window.prompt("Edit text", shape.linkedText.text);
+            if (newText != null) {
+              updateShape(shape.id, {
+                linkedText: {
+                  ...shape.linkedText,
+                  text: newText,
+                },
+              });
+            }
+          }}
+        />
+      )}
 
       {isSelected && (
         <Transformer
