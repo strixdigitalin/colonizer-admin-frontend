@@ -182,6 +182,9 @@ const EditableShape = ({
           fill={shape.fill}
           // fill={resolvedFill}
           draggable
+          // draggable={!shape.isBackground}
+          // listening={!shape.isBackground}
+          // opacity={shape.isBackground ? 0.8 : 1}
           onClick={() => onSelect(shape.id)}
           onTap={() => onSelect(shape.id)}
           onDragEnd={(e) => {

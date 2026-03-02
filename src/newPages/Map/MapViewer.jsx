@@ -86,6 +86,7 @@ const MapViewer = ({ token }) => {
   const [drawingPoints, setDrawingPoints] = useState(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [includeBackground, setIncludeBackground] = useState(true);
+  const [showMapImage, setShowMapImage] = useState(true);
 
   // rectangle draw state
   const [rectStart, setRectStart] = useState(null);
@@ -179,11 +180,36 @@ const MapViewer = ({ token }) => {
         }
         includeBackground={includeBackground}
         onBackgroundToggle={setIncludeBackground}
+        //
+        showMapImage={showMapImage}
+        onMapImageToggle={setShowMapImage}
+        onSendToBack={() => {
+          if (!selectedId) return;
+          const shape = shapes.find((s) => s.id === selectedId);
+          updateShape(selectedId, { isBackground: !shape?.isBackground });
+        }}
+        onZoneTypeChange={(zoneType) => {
+          if (!selectedId) return;
+          const ZONE_COLORS = {
+            boundary: "rgba(43,108,176,0.15)",
+            park: "rgba(34,197,94,0.3)",
+            road: "rgba(156,163,175,0.5)",
+            water: "rgba(59,130,246,0.3)",
+            commercial: "rgba(251,146,60,0.3)",
+            residential: "rgba(167,139,250,0.3)",
+            other: "rgba(253,224,71,0.3)",
+          };
+          updateShape(selectedId, {
+            zoneType,
+            fill: ZONE_COLORS[zoneType], // color change basis on the zone
+          });
+        }}
       />
 
       <MapStage
         stageRef={stageRef}
-        mapImage={mapImage}
+        // mapImage={mapImage}
+        mapImage={showMapImage ? mapImage : null}
         scale={scale}
         position={position}
         handleWheel={handleWheel}

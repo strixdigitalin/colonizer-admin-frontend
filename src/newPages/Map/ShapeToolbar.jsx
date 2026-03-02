@@ -1,3 +1,12 @@
+const ZONE_COLORS = {
+  park: "rgba(34,197,94,0.3)",
+  road: "rgba(156,163,175,0.5)",
+  water: "rgba(59,130,246,0.3)",
+  commercial: "rgba(251,146,60,0.3)",
+  residential: "rgba(167,139,250,0.3)",
+  other: "rgba(253,224,71,0.3)",
+};
+
 const ShapeToolbar = ({
   selectedTool,
   setSelectedTool,
@@ -13,9 +22,14 @@ const ShapeToolbar = ({
   onBackgroundToggle,
   onSave,
   saving,
+  showMapImage,
+  onMapImageToggle,
+  onSendToBack,
+  onZoneTypeChange,
 }) => {
   return (
-    <div className="flex gap-2 mb-3 items-center">
+    <div className="flex flex-wrap gap-2 mb-3 items-center">
+      {/* ── Tool Buttons ── */}
       <div className="flex gap-2">
         <button
           onClick={() => setSelectedTool("normal")}
@@ -146,16 +160,20 @@ const ShapeToolbar = ({
         </button>
       </div>
 
-      <div className="flex items-center gap-2 ml-4">
-        <label className="text-sm">Color:</label>
-        <input
-          type="color"
-          value={selectedShape?.fill || selectedShape?.stroke || "#7dd3fc"}
-          onChange={(e) => onColorChange && onColorChange(e.target.value)}
-          className="w-10 h-8 p-0 border-0"
-        />
-      </div>
+      {/* ── Color Picker (non-polygon shapes) ── */}
+      {selectedShape?.type !== "polygon" && (
+        <div className="flex items-center gap-2 ml-4">
+          <label className="text-sm">Color:</label>
+          <input
+            type="color"
+            value={selectedShape?.fill || selectedShape?.stroke || "#7dd3fc"}
+            onChange={(e) => onColorChange && onColorChange(e.target.value)}
+            className="w-10 h-8 p-0 border-0"
+          />
+        </div>
+      )}
 
+      {/* ── Text Options ── */}
       {selectedShape?.type === "text" && (
         <div className="flex items-center gap-2 ml-4 border-l pl-4">
           <label className="text-sm">Font:</label>
@@ -187,9 +205,30 @@ const ShapeToolbar = ({
         </div>
       )}
 
-      {(selectedShape?.type === "polygon" ||
-        selectedShape?.type === "line") && (
+      {/* ── Polygon Options — Zone Type, Fill, Opacity, Send to Back ── */}
+      {selectedShape?.type === "polygon" && (
         <div className="flex items-center gap-2 ml-4 border-l pl-4">
+          {/* Zone Type */}
+          <label className="text-sm font-medium">Zone:</label>
+          <select
+            value={selectedShape?.zoneType || "park"}
+            onChange={(e) => {
+              const zoneType = e.target.value;
+              // Zone change hone par color bhi auto update karo
+              onZoneTypeChange &&
+                onZoneTypeChange(zoneType, ZONE_COLORS[zoneType]);
+            }}
+            className="px-2 py-1 border rounded text-sm"
+          >
+            <option value="park">Park</option>
+            <option value="road">Road</option>
+            <option value="water">Water</option>
+            <option value="commercial">Commercial</option>
+            <option value="residential">Residential</option>
+            <option value="other">Other</option>
+          </select>
+
+          {/* Fill Color */}
           <label className="text-sm">Fill:</label>
           <input
             type="color"
@@ -229,11 +268,62 @@ const ShapeToolbar = ({
             }}
             className="w-20"
           />
+
+          {/* Send to Back toggle */}
+          <button
+            onClick={onSendToBack}
+            className={`px-3 py-1 rounded text-sm font-medium ${
+              selectedShape?.isBackground
+                ? "bg-indigo-500 text-white"
+                : "bg-gray-200 text-black hover:bg-gray-300"
+            }`}
+          >
+            {selectedShape?.isBackground ? "In Background" : "⬇ Send to Back"}
+          </button>
         </div>
       )}
 
+      {/* ── Line Fill Options ── */}
+      {selectedShape?.type === "line" && (
+        <div className="flex items-center gap-2 ml-4 border-l pl-4">
+          <label className="text-sm">Fill:</label>
+          <input
+            type="color"
+            value={
+              selectedShape?.fill?.startsWith("rgba")
+                ? "#2b6cb0"
+                : selectedShape?.fill || "#2b6cb0"
+            }
+            onChange={(e) => {
+              const hex = e.target.value;
+              const r = parseInt(hex.slice(1, 3), 16);
+              const g = parseInt(hex.slice(3, 5), 16);
+              const b = parseInt(hex.slice(5, 7), 16);
+              onColorChange && onColorChange(`rgba(${r},${g},${b},0.3)`);
+            }}
+            className="w-10 h-8 p-0 border-0"
+          />
+        </div>
+      )}
+
+      {/* ── Show Map Image Toggle ── */}
       <div className="flex items-center gap-2 ml-4 border-l pl-4">
-        <label className="text-sm">
+        <label className="text-sm cursor-pointer">
+          <input
+            type="checkbox"
+            checked={showMapImage ?? true}
+            onChange={(e) =>
+              onMapImageToggle && onMapImageToggle(e.target.checked)
+            }
+            className="mr-2"
+          />
+          Show Map
+        </label>
+      </div>
+
+      {/* ── Include Background (Export) ── */}
+      <div className="flex items-center gap-2 ml-2">
+        <label className="text-sm cursor-pointer">
           <input
             type="checkbox"
             checked={includeBackground}

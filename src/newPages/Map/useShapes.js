@@ -59,11 +59,22 @@ const useShapes = () => {
   };
 
   const updateShape = (id, newAttrs) => {
-    setShapes((prev) =>
-      prev.map((shape) =>
-        shape.id === id ? { ...shape, ...newAttrs } : shape,
-      ),
+    // setShapes((prev) =>
+    //   prev.map((shape) =>
+    //     shape.id === id ? { ...shape, ...newAttrs } : shape,
+    //   ),
+    // );
+    setShapes((prev) => {
+    const updated = prev.map((shape) =>
+      shape.id === id ? { ...shape, ...newAttrs } : shape
     );
+
+    // isBackground wale shapes ko array ke start mein rakho (render mein pehle = neeche)
+    return [
+      ...updated.filter((s) => s.isBackground),
+      ...updated.filter((s) => !s.isBackground),
+    ];
+  });
   };
 
   const copySelected = (id) => {
@@ -179,6 +190,8 @@ const useShapes = () => {
       strokeWidth: options.strokeWidth || 2,
       fill: options.fill || "rgba(43,108,176,0.15)",
       closed: true,
+      zoneType: options.zoneType || "boundary", // boundary | park | road | water | commercial | residential | other
+      isBackground: options.isBackground || false, // background layer mein shift karo
     };
     setShapes((prev) => [...prev, shape]);
     setSelectedId(shape.id);

@@ -1,5 +1,5 @@
 import React from "react";
-import { Stage, Layer } from "react-konva";
+import { Stage, Layer, Rect } from "react-konva";
 import MapLayer from "./MapLayer";
 
 const STAGE_WIDTH = 900;
@@ -33,7 +33,6 @@ const MapStage = ({
         y={position.y}
         scaleX={scale}
         scaleY={scale}
-        
         onWheel={handleWheel}
         onContextMenu={(e) => {
           // prevent default right-click menu on stage
@@ -68,6 +67,13 @@ const MapStage = ({
       >
         {/* Background */}
         <Layer>
+          <Rect
+            x={0}
+            y={0}
+            width={STAGE_WIDTH}
+            height={STAGE_HEIGHT}
+            fill="white"
+          />
           <MapLayer mapImage={mapImage} />
         </Layer>
 
