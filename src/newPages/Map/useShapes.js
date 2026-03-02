@@ -7,6 +7,8 @@ const useShapes = () => {
   const [selectedId, setSelectedId] = useState(null);
   const [copiedShape, setCopiedShape] = useState(null);
 
+  // console.log(shapes)
+
   const setSelectedTool = (tool) => {
     setSelectedId(null);
     _setSelectedTool(tool);
@@ -213,6 +215,7 @@ const useShapes = () => {
   return {
     shapes,
     addShape,
+    setShapes,
     removeShape,
     updateShape,
     selectedTool,

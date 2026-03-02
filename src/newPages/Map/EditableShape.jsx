@@ -1,6 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import { Rect, Transformer, Line, Circle, Text } from "react-konva";
 
+const STATUS_COLORS = {
+  available: "rgba(0, 238, 87, 0.9)",
+  hold: "rgba(243, 187, 19, 0.4)",
+  sold: "rgba(252, 66, 66, 0.4)",
+};
+
 const EditableShape = ({
   shape,
   isSelected,
@@ -11,6 +17,8 @@ const EditableShape = ({
 }) => {
   const shapeRef = useRef();
   const trRef = useRef();
+
+  const resolvedFill = shape.status ? STATUS_COLORS[shape.status] : shape.fill;
 
   useEffect(() => {
     if (isSelected && trRef.current && shapeRef.current) {
@@ -28,7 +36,8 @@ const EditableShape = ({
           stroke={shape.stroke}
           strokeWidth={shape.strokeWidth || 2}
           closed={shape.closed}
-          fill={shape.fill}
+          // fill={shape.fill}
+          fill={resolvedFill}
           draggable
           onClick={() => onSelect(shape.id)}
           onTap={() => onSelect(shape.id)}
@@ -171,6 +180,7 @@ const EditableShape = ({
           strokeWidth={shape.strokeWidth || 2}
           closed={true}
           fill={shape.fill}
+          // fill={resolvedFill}
           draggable
           onClick={() => onSelect(shape.id)}
           onTap={() => onSelect(shape.id)}
@@ -219,7 +229,8 @@ const EditableShape = ({
           y: shape.y,
           width: shape.width,
           height: shape.height,
-          fill: shape.fill,
+          // fill: shape.fill,
+          fill: resolvedFill,
           cornerRadius: shape.cornerRadius,
           rotation: shape.rotation,
         }}

@@ -11,6 +11,8 @@ const ShapeToolbar = ({
   onFontFamilyChange,
   includeBackground,
   onBackgroundToggle,
+  onSave,
+  saving,
 }) => {
   return (
     <div className="flex gap-2 mb-3 items-center">
@@ -130,6 +132,17 @@ const ShapeToolbar = ({
           className="px-3 py-1 bg-purple-500 text-white rounded"
         >
           Export
+        </button>
+        <button
+          onClick={onSave}
+          disabled={saving}
+          className={`px-3 py-1 rounded text-white font-medium ${
+            saving
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-green-600 hover:bg-green-700"
+          }`}
+        >
+          {saving ? "Saving..." : "💾 Save"}
         </button>
       </div>
 

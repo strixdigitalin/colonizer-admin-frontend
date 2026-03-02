@@ -6,9 +6,12 @@ import useZoom from "./useZoom";
 import ZoomControls from "./ZoomControls";
 import MapStage from "./MapStage";
 import useShapes from "./useShapes";
+import usePlotSync from "./usePlotSync";
 import RectPreview from "./RectPreview";
 import ShapeToolbar from "./ShapeToolbar";
 import EditableShape from "./EditableShape";
+import { toast } from "react-toastify";
+import Loader from "../../Loader/Loader";
 
 const MapViewer = ({ token }) => {
   const { id: colonyId } = useParams();
@@ -16,12 +19,13 @@ const MapViewer = ({ token }) => {
 
   const { mapImage, loading } = useMapImage(colonyId, token);
   const [polygonPoints, setPolygonPoints] = useState([]);
-  const [mousePos, setMousePos] = useState(null); 
+  const [mousePos, setMousePos] = useState(null);
   const SNAP_DISTANCE = 20;
 
   const {
     shapes,
     addShape,
+    setShapes,
     selectedTool,
     setSelectedTool,
     selectedId,
@@ -38,6 +42,43 @@ const MapViewer = ({ token }) => {
     removeLinkedText,
     addPolygon,
   } = useShapes();
+
+  const {
+    saving,
+    loading: syncLoading,
+    loadPlots,
+    bulkSave,
+    deletePlot,
+  } = usePlotSync(colonyId, token);
+
+  React.useEffect(() => {
+    const load = async () => {
+      const loadedShapes = await loadPlots();
+      if (loadedShapes.length > 0) {
+        setShapes(loadedShapes);
+      }
+    };
+    load();
+  }, [colonyId]);
+
+  const handleSave = async () => {
+    const success = await bulkSave(shapes);
+    if (success) {
+      toast.success("Save successful");
+    } else {
+      toast.error("Save failed");
+    }
+  };
+
+  const handleRemoveShape = async (id) => {
+    removeShape(id);
+    const isMongoId = /^[a-f\d]{24}$/i.test(id);
+
+    if (!isMongoId) {
+      return;
+    }
+    await deletePlot(id);
+  };
 
   const { scale, position, zoomIn, zoomOut, resetZoom, handleWheel } =
     useZoom(stageRef);
@@ -103,12 +144,16 @@ const MapViewer = ({ token }) => {
 
   return (
     <div className="border p-4 bg-white rounded-xl shadow">
+      {(loading || syncLoading) && <Loader />}
       <ZoomControls zoomIn={zoomIn} zoomOut={zoomOut} resetZoom={resetZoom} />
 
       <ShapeToolbar
         selectedTool={selectedTool}
         setSelectedTool={setSelectedTool}
-        onDelete={() => selectedId && removeShape(selectedId)}
+        onSave={handleSave}
+        saving={syncLoading}
+        // onDelete={() => selectedId && removeShape(selectedId)}
+        onDelete={() => selectedId && handleRemoveShape(selectedId)}
         onCopy={() => selectedId && copySelected(selectedId)}
         onPaste={() => pasteCopied()}
         onExport={exportCanvas}
@@ -278,7 +323,8 @@ const MapViewer = ({ token }) => {
             isSelected={selectedId === shape.id}
             onSelect={() => selectShape(shape.id)}
             updateShape={(id, attrs) => updateShape(id, attrs)}
-            removeShape={() => removeShape(shape.id)}
+            // removeShape={() => removeShape(shape.id)}
+            removeShape={() => handleRemoveShape(shape.id)}
             copyShape={() => copySelected(shape.id)}
           />
         ))}
@@ -320,8 +366,7 @@ const MapViewer = ({ token }) => {
                   const nearFirst =
                     isFirst &&
                     mousePos &&
-                    Math.hypot(mousePos.x - px, mousePos.y - py) <=
-                      snapDist;
+                    Math.hypot(mousePos.x - px, mousePos.y - py) <= snapDist;
 
                   acc.push(
                     <Circle

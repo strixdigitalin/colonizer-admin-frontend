@@ -33,6 +33,7 @@ const MapStage = ({
         y={position.y}
         scaleX={scale}
         scaleY={scale}
+        
         onWheel={handleWheel}
         onContextMenu={(e) => {
           // prevent default right-click menu on stage
