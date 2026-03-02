@@ -10,6 +10,7 @@ const STATUS_COLORS = {
 const EditableShape = ({
   shape,
   isSelected,
+  currentTool = "normal", // tool currently active in parent
   onSelect,
   updateShape,
   removeShape,
@@ -19,6 +20,11 @@ const EditableShape = ({
   const trRef = useRef();
 
   const resolvedFill = shape.status ? STATUS_COLORS[shape.status] : shape.fill;
+
+  // when a drawing tool is active we don't want shapes to steal
+  // single-clicks; also polygons should require a double-click to
+  // become selected even in 'normal' mode.
+  const allowSingleClick = currentTool === "normal" && shape.type !== "polygon";
 
   useEffect(() => {
     if (isSelected && trRef.current && shapeRef.current) {
@@ -39,8 +45,15 @@ const EditableShape = ({
           // fill={shape.fill}
           fill={resolvedFill}
           draggable
-          onClick={() => onSelect(shape.id)}
-          onTap={() => onSelect(shape.id)}
+          onClick={() => {
+            if (allowSingleClick) onSelect(shape.id);
+          }}
+          onTap={() => {
+            if (allowSingleClick) onSelect(shape.id);
+          }}
+          onDblClick={() => {
+            onSelect(shape.id);
+          }}
           onDragEnd={(e) => {
             const dx = e.target.x() - (shape.x || 0);
             const dy = e.target.y() - (shape.y || 0);
@@ -121,6 +134,7 @@ const EditableShape = ({
     return (
       <>
         <Text
+          id={shape.id}
           text={shape.text}
           x={shape.x}
           y={shape.y}
@@ -129,9 +143,15 @@ const EditableShape = ({
           fill={shape.fill}
           ref={shapeRef}
           draggable
-          onClick={() => onSelect(shape.id)}
-          onTap={() => onSelect(shape.id)}
+          onClick={() => {
+            if (allowSingleClick) onSelect(shape.id);
+          }}
+          onTap={() => {
+            if (allowSingleClick) onSelect(shape.id);
+          }}
           onDblClick={() => {
+            // ensure selection then open edit prompt
+            onSelect(shape.id);
             const newText = window.prompt("Edit text", shape.text);
             if (newText != null) {
               updateShape(shape.id, { text: newText });
@@ -185,8 +205,15 @@ const EditableShape = ({
           // draggable={!shape.isBackground}
           // listening={!shape.isBackground}
           // opacity={shape.isBackground ? 0.8 : 1}
-          onClick={() => onSelect(shape.id)}
-          onTap={() => onSelect(shape.id)}
+          onClick={() => {
+            if (allowSingleClick) onSelect(shape.id);
+          }}
+          onTap={() => {
+            if (allowSingleClick) onSelect(shape.id);
+          }}
+          onDblClick={() => {
+            onSelect(shape.id);
+          }}
           onDragEnd={(e) => {
             const dx = e.target.x();
             const dy = e.target.y();
@@ -227,6 +254,7 @@ const EditableShape = ({
   return (
     <>
       <Rect
+        id={shape.id}
         {...{
           x: shape.x,
           y: shape.y,
@@ -239,9 +267,14 @@ const EditableShape = ({
         }}
         ref={shapeRef}
         draggable
-        onClick={() => onSelect(shape.id)}
-        onTap={() => onSelect(shape.id)}
+        onClick={() => {
+          if (allowSingleClick) onSelect(shape.id);
+        }}
+        onTap={() => {
+          if (allowSingleClick) onSelect(shape.id);
+        }}
         onDblClick={() => {
+          onSelect(shape.id);
           const txt = window.prompt(
             "Add text to shape",
             shape.linkedText?.text || "",

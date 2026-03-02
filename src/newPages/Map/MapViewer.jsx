@@ -92,6 +92,13 @@ const MapViewer = ({ token }) => {
   const [rectStart, setRectStart] = useState(null);
   const [rectPreview, setRectPreview] = useState(null);
 
+  // keep track of the node we got on the last mousedown so that the
+  // corresponding mouseup logic can restore selection if necessary
+  const lastDownTarget = useRef(null);
+  // remember which shape was selected when mouse went down; drawing code
+  // may change selection, so we use this to restore afterwards
+  const lastDownSelected = useRef(null);
+
   const exportCanvas = () => {
     if (!stageRef.current) return;
     const stage = stageRef.current;
@@ -213,19 +220,44 @@ const MapViewer = ({ token }) => {
         scale={scale}
         position={position}
         handleWheel={handleWheel}
-        onStageRightClick={(x, y) => {
+        onStageRightClick={(x, y, target) => {
           // right click clears selection (and prevents default menu)
+          // target might be a shape when clicking over one
           selectShape(null);
         }}
-        onStageMouseDown={(x, y) => {
-          // clicking background should clear any selected shape
-          selectShape(null);
+        onStageMouseDown={(x, y, target) => {
+          lastDownTarget.current = target;
+          // determine if this event originated from the bare stage itself
+          const stage =
+            stageRef.current && stageRef.current.getStage
+              ? stageRef.current.getStage()
+              : null;
+          const isStage = target === stage || target === stageRef.current;
+          if (isStage) {
+            selectShape(null);
+          }
 
-          if (!selectedTool) {
-            // no active tool, do nothing
+          // ignore transformer handles (they should not start any drawing)
+          if (
+            target &&
+            target.getParent &&
+            target.getParent().className === "Transformer"
+          ) {
             return;
           }
 
+          // when the tool is null or normal, don't create anything
+          if (!selectedTool || selectedTool === "normal") {
+            return;
+          }
+
+          // remember current selection so we can restore it if click was on a
+          // shape.  drawing over existing items should not automatically
+          // divert focus away from them.
+          const previousSelected = selectedId;
+          lastDownSelected.current = previousSelected;
+
+          // proceed with drawing regardless of whether we clicked a shape
           if (selectedTool === "pencil") {
             setDrawingPoints([x, y]);
             setIsDrawing(true);
@@ -242,40 +274,46 @@ const MapViewer = ({ token }) => {
             const txt = window.prompt("Enter text", "Text");
             if (txt != null) {
               addText(x, y, txt, { fontSize: 20, fill: "#000" });
+              if (!isStage && previousSelected) {
+                selectShape(previousSelected);
+                lastDownSelected.current = null;
+                lastDownTarget.current = null;
+              }
             }
             return;
           }
 
           if (selectedTool === "polygon") {
             if (polygonPoints.length >= 4) {
-              // Check karo kya pehle point ke paas click kiya
               const firstX = polygonPoints[0];
               const firstY = polygonPoints[1];
-
-              // adjust threshold for current zoom so the hit area stays
-              // approximately SNAP_DISTANCE pixels on screen
               const snapDist = SNAP_DISTANCE / scale;
               const dist = Math.hypot(x - firstX, y - firstY);
-
               if (dist <= snapDist) {
-                // Close the polygon!
                 addPolygon(polygonPoints, {
                   stroke: "#2b6cb0",
                   fill: "rgba(43,108,176,0.15)",
                 });
-                setPolygonPoints([]); // reset
+                // restore selection only if click not on empty area
+                if (!isStage && previousSelected) {
+                  selectShape(previousSelected);
+                  lastDownSelected.current = null;
+                  lastDownTarget.current = null;
+                }
+                setPolygonPoints([]);
                 setMousePos(null);
                 return;
               }
             }
-            // Naya point add karo
             setPolygonPoints((prev) => [...prev, x, y]);
             return;
           }
 
+          // fallback for normal rectangle/rounded/custom/line
           addShape(x, y);
+          if (!isStage && previousSelected) selectShape(previousSelected);
         }}
-        onStageMouseMove={(x, y) => {
+        onStageMouseMove={(x, y /* , target */) => {
           if (isDrawing) {
             setDrawingPoints((prev) => (prev ? [...prev, x, y] : [x, y]));
             return;
@@ -295,7 +333,15 @@ const MapViewer = ({ token }) => {
             return;
           }
         }}
-        onStageMouseUp={(x, y) => {
+        onStageMouseUp={(x, y /* , target */) => {
+          const stage =
+            stageRef.current && stageRef.current.getStage
+              ? stageRef.current.getStage()
+              : null;
+          const wasStage =
+            lastDownTarget.current === stage ||
+            lastDownTarget.current === stageRef.current;
+
           if (isDrawing) {
             const pts = drawingPoints || [];
             // include final point
@@ -311,6 +357,11 @@ const MapViewer = ({ token }) => {
             });
             setDrawingPoints(null);
             setIsDrawing(false);
+            if (!wasStage && lastDownSelected.current)
+              selectShape(lastDownSelected.current);
+            // clear refs
+            lastDownSelected.current = null;
+            lastDownTarget.current = null;
             return;
           }
 
@@ -338,6 +389,10 @@ const MapViewer = ({ token }) => {
 
             setRectStart(null);
             setRectPreview(null);
+            if (!wasStage && lastDownSelected.current)
+              selectShape(lastDownSelected.current);
+            lastDownSelected.current = null;
+            lastDownTarget.current = null;
             return;
           }
         }}
@@ -347,6 +402,8 @@ const MapViewer = ({ token }) => {
             key={shape.id}
             shape={shape}
             isSelected={selectedId === shape.id}
+            // provide current tool so the shape can disable clicks during drawing
+            currentTool={selectedTool}
             onSelect={() => selectShape(shape.id)}
             updateShape={(id, attrs) => updateShape(id, attrs)}
             // removeShape={() => removeShape(shape.id)}
