@@ -101,6 +101,11 @@ const ColonyList = ({ token }) => {
       icon: <Landslide />,
     },
     {
+      name: "Requested",
+      handleClick: (colony)=>{navigate(`/colony/requests/${colony._id}`)},
+      icon: <Landslide />,
+    },
+    {
       name: "Delete",
       handleClick: handleDelete,
       icon: <DeleteIcon />,

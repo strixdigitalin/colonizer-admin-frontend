@@ -11,10 +11,7 @@ import SubAdminList from "./newPages/Subadmin/SubAdminList.jsx";
 import CouponAddEdit from "./newPages/Coupon/CouponAddEdit.jsx";
 import AddOrEditSubadmin from "./newPages/Subadmin/AddOrEditSubadmin.jsx";
 
-
-
-
-// logout utils import 
+// logout utils import
 import { setupInterceptors } from "./utils/authUtil";
 import { logoutUtil } from "./utils/logoutUtil.js";
 import { useEffect } from "react";
@@ -30,11 +27,12 @@ import Marker from "./newPages/Plot/Marker.jsx";
 import MainMarker from "./newPages/Plot/MainMarker.jsx";
 import MapViewer from "./newPages/Map/MapViewer.jsx";
 import PlotList from "./newPages/NewPlot/PlotList.jsx";
+import ColonyHoldRequests from "./newPages/Hold/ColonyHoldRequests.jsx";
 
 // Get subadmin permissions from localStorage
 const getSubadminPermissions = () => {
   try {
-    const subadminData = localStorage.getItem('adc_aspirants_subadmin');
+    const subadminData = localStorage.getItem("adc_aspirants_subadmin");
     if (subadminData) {
       const parsed = JSON.parse(subadminData);
       return parsed.permissions || [];
@@ -65,32 +63,102 @@ function App() {
           }
         >
           <Route index element={<Navigate to="dashboard" />} />
-          <Route path="dashboard" element={<Dashboard token={adminToken} routepath="/" />} />
-          <Route path="blog" element={<BlogList token={adminToken} routepath="/" />} />
-          <Route path="blog/add" element={<BlogAddEdit token={adminToken} routepath="/" />} />
-          <Route path="blog/edit/:id" element={<BlogAddEdit token={adminToken} routepath="/" />} />
+          <Route
+            path="dashboard"
+            element={<Dashboard token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="blog"
+            element={<BlogList token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="blog/add"
+            element={<BlogAddEdit token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="blog/edit/:id"
+            element={<BlogAddEdit token={adminToken} routepath="/" />}
+          />
           {/* ==========new Routes================== */}
-          <Route path="brokers" element={<BrokerList token={adminToken} routepath="/" />} />
-          <Route path="customers" element={<CustomerList token={adminToken} routepath="/" />} />
-          <Route path="marker" element={<Marker token={adminToken} routepath="/" />} />
-          <Route path="colony" element={<ColonyList token={adminToken} routepath="/" />} />
-          <Route path="colony/add" element={<ColonyAddEdit token={adminToken} routepath="/" />} />
-          <Route path="colony/edit/:id" element={<ColonyAddEdit token={adminToken} routepath="/" />} />
-          <Route path="colony/map/:id" element={<MapViewer token={adminToken} routepath="/" />} />
+          <Route
+            path="brokers"
+            element={<BrokerList token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="customers"
+            element={<CustomerList token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="marker"
+            element={<Marker token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="colony"
+            element={<ColonyList token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="colony/add"
+            element={<ColonyAddEdit token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="colony/edit/:id"
+            element={<ColonyAddEdit token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="colony/map/:id"
+            element={<MapViewer token={adminToken} routepath="/" />}
+          />
           {/* ==============Plot Routes================ */}
-          <Route path="plots/:colonyId" element={<PlotList token={adminToken} routepath="/" />} />
+          <Route
+            path="plots/:colonyId"
+            element={<PlotList token={adminToken} routepath="/" />}
+          />
+          {/* ==============Hold Routes================ */}
+          <Route
+            path="colony/requests/:colonyId"
+            element={<ColonyHoldRequests token={adminToken} routepath="/" />}
+          />
           {/* ==========new Routes================== */}
-          <Route path="orders" element={<OrderList token={adminToken} routepath="/" />} />
-          <Route path="coupons" element={<CouponList token={adminToken} routepath="/" />} />
-          <Route path="coupons/add" element={<CouponAddEdit token={adminToken} routepath="/" />} />
-          <Route path="coupons/edit/:id" element={<CouponAddEdit token={adminToken} routepath="/" />} />
-          <Route path="faq" element={<FaqList token={adminToken} routepath="/" />} />
-          <Route path="faq/add" element={<FaqAddEdit token={adminToken} routepath="/" />} />
-          <Route path="faq/edit/:id" element={<FaqAddEdit token={adminToken} routepath="/" />} />
-          <Route path="subadmin" element={<SubAdminList token={adminToken} routepath="/" />} />
-          <Route path="subadmin/add" element={<AddOrEditSubadmin token={adminToken} routepath="/" />} />
-          <Route path="subadmin/edit/:id" element={<AddOrEditSubadmin token={adminToken} routepath="/" />} />
-
+          <Route
+            path="orders"
+            element={<OrderList token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="coupons"
+            element={<CouponList token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="coupons/add"
+            element={<CouponAddEdit token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="coupons/edit/:id"
+            element={<CouponAddEdit token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="faq"
+            element={<FaqList token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="faq/add"
+            element={<FaqAddEdit token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="faq/edit/:id"
+            element={<FaqAddEdit token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="subadmin"
+            element={<SubAdminList token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="subadmin/add"
+            element={<AddOrEditSubadmin token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="subadmin/edit/:id"
+            element={<AddOrEditSubadmin token={adminToken} routepath="/" />}
+          />
         </Route>
         {/* Auth routes */}
         <Route path="/auth/signin" element={<Auth />} />
