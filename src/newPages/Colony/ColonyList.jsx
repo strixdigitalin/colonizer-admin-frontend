@@ -6,6 +6,7 @@ import { API_URI } from "../../utils/Global/main";
 import { useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { Landslide, PlusOneTwoTone } from "@mui/icons-material";
 
 const ColonyList = ({ token }) => {
   const navigate = useNavigate();
@@ -54,6 +55,10 @@ const ColonyList = ({ token }) => {
     navigate(`/colony/map/${colony._id}`);
   };
 
+  const handleplotNavigate = (colony) => {
+    navigate(`/plots/${colony._id}`);
+  };
+
   const handleDelete = async (colony) => {
     if (window.confirm("Are you sure you want to delete this colony?")) {
       try {
@@ -89,6 +94,11 @@ const ColonyList = ({ token }) => {
       name: "Upload Map",
       handleClick: handleUploadMap,
       icon: <EditIcon />,
+    },
+    {
+      name: "Plot List",
+      handleClick: handleplotNavigate,
+      icon: <Landslide />,
     },
     {
       name: "Delete",

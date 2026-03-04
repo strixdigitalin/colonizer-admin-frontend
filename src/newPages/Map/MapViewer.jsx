@@ -246,8 +246,8 @@ const MapViewer = ({ token }) => {
             return;
           }
 
-          // when the tool is null or normal, don't create anything
-          if (!selectedTool || selectedTool === "normal") {
+          // if no tool is chosen we do nothing; 'normal' still draws a rect-like shape
+          if (!selectedTool) {
             return;
           }
 
