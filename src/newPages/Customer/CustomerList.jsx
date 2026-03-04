@@ -3,8 +3,11 @@ import Header from "../../components/designs/TopComponents/Header";
 import NormalTable from "../../components/designs/Tables/NormalTable";
 import axios from "axios";
 import { API_URI } from "../../utils/Global/main";
+import { DocumentScanner } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 const CustomerList = ({ token }) => {
+  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -12,12 +15,9 @@ const CustomerList = ({ token }) => {
     try {
       setLoading(true);
 
-      const res = await axios.get(
-        `${API_URI}/api/v1/customer/owner/all`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await axios.get(`${API_URI}/api/v1/customer/owner/all`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       const customers = res.data?.data || [];
 
@@ -43,6 +43,16 @@ const CustomerList = ({ token }) => {
     fetchCustomers();
   }, []);
 
+  const actions = [
+    {
+      name: "Documents",
+      handleClick: (customer) => {
+        navigate(`/customer/documents/${customer._id}`);
+      },
+      icon: <DocumentScanner />,
+    },
+  ];
+
   const customerTableStructure = [
     { header: "S.NO", accessKey: "index" },
     { header: "Name", accessKey: "name" },
@@ -63,6 +73,7 @@ const CustomerList = ({ token }) => {
           tableStructure={customerTableStructure}
           data={data}
           isLoading={loading}
+          options={actions}
         />
       </div>
     </div>
