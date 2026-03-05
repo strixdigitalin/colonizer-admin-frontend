@@ -6,6 +6,8 @@ import Header from "../../components/designs/TopComponents/Header";
 import NormalTable from "../../components/designs/Tables/NormalTable";
 import InsertDriveFileOutlinedIcon from "@mui/icons-material/InsertDriveFileOutlined";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import DeleteIcon from "@mui/icons-material/Delete";
+import UploadDocumentDialog from "./UploadDocumentDialog";
 
 
 const DocTypeBadge = ({ type }) => {
@@ -27,8 +29,9 @@ const DocTypeBadge = ({ type }) => {
 
 const CustomerDocumentList = ({ token }) => {
   const { customerId }      = useParams();
-  const [data, setData]     = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [data, setData]         = useState([]);
+  const [loading, setLoading]   = useState(false);
+  const [showUpload, setShowUpload] = useState(false);
 
   const fetchDocuments = async () => {
     try {
@@ -43,7 +46,14 @@ const CustomerDocumentList = ({ token }) => {
       const formatted = docs.map((doc, index) => ({
         ...doc,
         index: index + 1,
-        docTypeBadge: <DocTypeBadge type={doc.documentType} />,
+        docTypeBadge: (
+          <span
+            onClick={() => doc.fileUrl && window.open(doc.fileUrl, "_blank")}
+            className="cursor-pointer"
+          >
+            <DocTypeBadge type={doc.documentType} />
+          </span>
+        ),
         plotDisplay:  doc.plotId?.plotNumber || "—",
         noteDisplay:  doc.note || "—",
         uploadedAt:   new Date(doc.createdAt).toLocaleDateString("en-IN", {
@@ -77,6 +87,19 @@ const CustomerDocumentList = ({ token }) => {
     }
   };
 
+  const handleDelete = async (doc) => {
+    if (window.confirm(`"${doc.title}" ko delete karna chahte ho?`)) {
+      try {
+        await axios.delete(
+          `${API_URI}/api/v1/documents/owner/${doc._id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        fetchDocuments();
+      } catch (error) {
+        console.error("Error deleting document:", error);
+      }
+    }
+  };
 
   const tableStructure = [
     { header: "S.NO",      accessKey: "index" },
@@ -93,11 +116,21 @@ const CustomerDocumentList = ({ token }) => {
       icon: <OpenInNewIcon />,
       handleClick: handleOpenFile,
     },
+    {
+      name: "Delete",
+      icon: <DeleteIcon />,
+      handleClick: handleDelete,
+    },
   ];
 
   return (
-    <div className="my-2 flex-1 md:mr-2 md:p-6 pt-[60px] px-1 md:rounded-2xl bg-white border shadow overflow-y-auto">
-      <Header title={"Customer Documents"} add={false} />
+    <div className="my-2 flex-1 md:mr-2 md:p-6 pt-[60px] px-1 md:rounded-2xl bg-white border shadow overflow-y-auto h-screen">
+      <Header
+        title={"Customer Documents"}
+        add
+        addTitle={"Document"}
+        handleClick={() => setShowUpload(true)}
+      />
 
       <div className="md:my-8 my-4 mx-auto md:mx-4">
         <NormalTable
@@ -107,6 +140,15 @@ const CustomerDocumentList = ({ token }) => {
           options={actions}
         />
       </div>
+
+      {showUpload && (
+        <UploadDocumentDialog
+          customerId={customerId}
+          token={token}
+          onClose={() => setShowUpload(false)}
+          onSuccess={fetchDocuments}
+        />
+      )}
     </div>
   );
 };
