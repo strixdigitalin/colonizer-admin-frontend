@@ -54,7 +54,7 @@ const CustomerDocumentList = ({ token }) => {
             <DocTypeBadge type={doc.documentType} />
           </span>
         ),
-        plotDisplay:  doc.plotId?.plotNumber || "—",
+        plotDisplay:  doc?.plotId?.shapeData?.linkedText?.text||"-",
         noteDisplay:  doc.note || "—",
         uploadedAt:   new Date(doc.createdAt).toLocaleDateString("en-IN", {
           day: "2-digit", month: "short", year: "numeric",
@@ -116,20 +116,20 @@ const CustomerDocumentList = ({ token }) => {
       icon: <OpenInNewIcon />,
       handleClick: handleOpenFile,
     },
-    {
-      name: "Delete",
-      icon: <DeleteIcon />,
-      handleClick: handleDelete,
-    },
+    // {
+    //   name: "Delete",
+    //   icon: <DeleteIcon />,
+    //   handleClick: handleDelete,
+    // },
   ];
 
   return (
     <div className="my-2 flex-1 md:mr-2 md:p-6 pt-[60px] px-1 md:rounded-2xl bg-white border shadow overflow-y-auto h-screen">
       <Header
         title={"Customer Documents"}
-        add
-        addTitle={"Document"}
-        handleClick={() => setShowUpload(true)}
+        // add
+        // addTitle={"Document"}
+        // handleClick={() => setShowUpload(true)}
       />
 
       <div className="md:my-8 my-4 mx-auto md:mx-4">
