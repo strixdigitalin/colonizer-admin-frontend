@@ -68,6 +68,10 @@ const MapViewer = ({ token }) => {
     } else {
       toast.error("Save failed");
     }
+    const loadedShapes = await loadPlots();
+    if (loadedShapes.length > 0) {
+      setShapes(loadedShapes);
+    }
   };
 
   const handleRemoveShape = async (id) => {
@@ -78,6 +82,10 @@ const MapViewer = ({ token }) => {
       return;
     }
     await deletePlot(id);
+    const loadedShapes = await loadPlots();
+    if (loadedShapes.length > 0) {
+      setShapes(loadedShapes);
+    }
   };
 
   const { scale, position, zoomIn, zoomOut, resetZoom, handleWheel } =

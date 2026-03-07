@@ -7,7 +7,7 @@ import BlogList from "./newPages/Blog/BlogList.jsx";
 import Dashboard from "./pages/Home/Dashboard.jsx";
 import OrderList from "./newPages/Order/OrderList.jsx";
 import CouponList from "./newPages/Coupon/CouponList.jsx";
-import SubAdminList from "./newPages/Subadmin/SubAdminList.jsx";
+import SubAdminList from "./newPages/Subadmin/SubadminList.jsx";
 import CouponAddEdit from "./newPages/Coupon/CouponAddEdit.jsx";
 import AddOrEditSubadmin from "./newPages/Subadmin/AddOrEditSubadmin.jsx";
 

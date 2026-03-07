@@ -69,6 +69,7 @@ const PlotList = ({ token }) => {
         facingDisplay:       plot.facing       || "—",
         plotAreaDisplay:     plot.plotArea     || "—",
         createdAt: new Date(plot.createdAt).toLocaleDateString(),
+        plotNumber:plot?.shapeData?.linkedText?.text||""
       }));
 
       setData(updatedData);

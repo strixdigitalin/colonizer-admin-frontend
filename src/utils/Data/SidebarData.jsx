@@ -15,16 +15,16 @@ export const menuItems = [
         type: 'item'
     },
     // broker
-    {
-        icon: <BsPeople />,
-        title: "Brokers",
-        link: '/brokers',
-        type: 'item'
-    },
+    // {
+    //     icon: <BsPeople />,
+    //     title: "Brokers",
+    //     link: '/brokers',
+    //     type: 'item'
+    // },
     // customers
     {
         icon: <BsPeople />,
-        title: "Customers",
+        title: "Users",
         link: '/customers',
         type: 'item'
     },

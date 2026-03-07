@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import axios from "axios";
 import { API_URI } from "../../utils/Global/main";
+import { toast } from "react-toastify";
 
 const usePlotSync = (colonyId, token) => {
   const [saving, setSaving] = useState(false);
@@ -36,6 +37,7 @@ const usePlotSync = (colonyId, token) => {
       return shapes;
     } catch (err) {
       console.error("Load plots error:", err);
+      toast.error("Failed to load plots");
       return [];
     } finally {
       setLoading(false);
@@ -46,6 +48,7 @@ const usePlotSync = (colonyId, token) => {
     async (shapes) => {
       try {
         setSaving(true);
+        setLoading(true);
 
         const plots = shapes.map((shape) => {
           const { id, status, plotNumber, _plotData, ...shapeData } = shape;
@@ -73,9 +76,11 @@ const usePlotSync = (colonyId, token) => {
         return true;
       } catch (err) {
         console.error("Bulk save error:", err);
+        toast.error("Failed to save plots");
         return false;
       } finally {
         setSaving(false);
+        setLoading(false);
       }
     },
     [colonyId, token],
@@ -83,15 +88,19 @@ const usePlotSync = (colonyId, token) => {
 
   const updateStatus = useCallback(
     async (plotId, status, note = "") => {
+      setLoading(true);
       try {
         await axios.put(
           `${API_URI}/api/v1/plots/owner/status/${plotId}`,
           { status, note },
           { headers: { Authorization: `Bearer ${token}` } },
         );
+        setLoading(false);
         return true;
       } catch (err) {
         console.error("Status update error:", err);
+        toast.error("Failed to update plot status");
+        setLoading(false);
         return false;
       }
     },
@@ -100,13 +109,17 @@ const usePlotSync = (colonyId, token) => {
 
   const deletePlot = useCallback(
     async (plotId) => {
+      setLoading(true);
       try {
         await axios.delete(`${API_URI}/api/v1/plots/owner/delete/${plotId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        setLoading(false);
         return true;
       } catch (err) {
         console.error("Delete plot error:", err);
+        toast.error(err?.response?.data?.message || "Failed to delete plot");
+        setLoading(false);
         return false;
       }
     },
