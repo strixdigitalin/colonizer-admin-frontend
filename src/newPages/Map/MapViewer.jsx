@@ -13,11 +13,12 @@ import EditableShape from "./EditableShape";
 import { toast } from "react-toastify";
 import Loader from "../../Loader/Loader";
 
+
 const MapViewer = ({ token }) => {
   const { id: colonyId } = useParams();
   const stageRef = useRef();
 
-  const { mapImage, loading } = useMapImage(colonyId, token);
+  const { mapImage, loading, uploadMapImage } = useMapImage(colonyId, token);
   const [polygonPoints, setPolygonPoints] = useState([]);
   const [mousePos, setMousePos] = useState(null);
   const SNAP_DISTANCE = 20;
@@ -161,7 +162,7 @@ const MapViewer = ({ token }) => {
   return (
     <div className="border p-4 bg-white rounded-xl shadow">
       {(loading || syncLoading) && <Loader />}
-      <ZoomControls zoomIn={zoomIn} zoomOut={zoomOut} resetZoom={resetZoom} />
+      <ZoomControls zoomIn={zoomIn} zoomOut={zoomOut} resetZoom={resetZoom} uploadMapImage={uploadMapImage} />
 
       <ShapeToolbar
         selectedTool={selectedTool}

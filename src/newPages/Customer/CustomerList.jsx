@@ -3,13 +3,16 @@ import Header from "../../components/designs/TopComponents/Header";
 import NormalTable from "../../components/designs/Tables/NormalTable";
 import axios from "axios";
 import { API_URI } from "../../utils/Global/main";
-import { DocumentScanner } from "@mui/icons-material";
+import { DocumentScanner, Edit } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import UpdateCustomer from "./UpdateCustomer";
 
 const CustomerList = ({ token }) => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
   const fetchCustomers = async () => {
     try {
@@ -51,6 +54,14 @@ const CustomerList = ({ token }) => {
       },
       icon: <DocumentScanner />,
     },
+    {
+      name: "Edit",
+      handleClick: (customer) => {
+        setSelectedCustomer(customer);
+        setOpenModal(true);
+      },
+      icon : <Edit />
+    },
   ];
 
   const customerTableStructure = [
@@ -76,6 +87,13 @@ const CustomerList = ({ token }) => {
           options={actions}
         />
       </div>
+      <UpdateCustomer
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        customer={selectedCustomer}
+        token={token}
+        refresh={fetchCustomers}
+      />
     </div>
   );
 };
