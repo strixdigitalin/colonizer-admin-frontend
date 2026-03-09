@@ -29,6 +29,7 @@ import MapViewer from "./newPages/Map/MapViewer.jsx";
 import PlotList from "./newPages/NewPlot/PlotList.jsx";
 import ColonyHoldRequests from "./newPages/Hold/ColonyHoldRequests.jsx";
 import CustomerDocumentList from "./newPages/Document/CustomerDocumentList.jsx";
+import PlotDocumentList from "./newPages/Document/PlotDocumentList.jsx";
 
 // Get subadmin permissions from localStorage
 const getSubadminPermissions = () => {
@@ -92,6 +93,10 @@ function App() {
           <Route
             path="customer/documents/:customerId"
             element={<CustomerDocumentList token={adminToken} routepath="/" />}
+          />
+          <Route
+            path="plot/documents/:plotId"
+            element={<PlotDocumentList token={adminToken} routepath="/" />}
           />
           <Route
             path="marker"

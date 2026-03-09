@@ -6,8 +6,10 @@ import NormalTable from "../../components/designs/Tables/NormalTable";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import UpdatePlotDialog from "./UpdatePlotDialog";
+import { DocumentScanner } from "@mui/icons-material";
+
 
 const StatusBadge = ({ status }) => {
   const config = {
@@ -43,6 +45,7 @@ const ShapeTypeBadge = ({ type }) => {
 
 
 const PlotList = ({ token }) => {
+  const navigate = useNavigate();
   const { colonyId } = useParams();
   const [data, setData]           = useState([]);
   const [loading, setLoading]     = useState(false);
@@ -119,11 +122,11 @@ const PlotList = ({ token }) => {
       handleClick: handleEdit,
       icon: <EditIcon />,
     },
-    // {
-    //   name: "Delete",
-    //   handleClick: handleDelete,
-    //   icon: <DeleteIcon />,
-    // },
+    {
+      name: "Documents",
+      handleClick: (plot)=>navigate(`/plot/documents/${plot?._id}`),
+      icon: <DocumentScanner />,
+    },
   ];
 
   return (
