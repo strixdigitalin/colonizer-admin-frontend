@@ -13,7 +13,6 @@ import EditableShape from "./EditableShape";
 import { toast } from "react-toastify";
 import Loader from "../../Loader/Loader";
 
-
 const MapViewer = ({ token }) => {
   const { id: colonyId } = useParams();
   const stageRef = useRef();
@@ -162,7 +161,12 @@ const MapViewer = ({ token }) => {
   return (
     <div className="border p-4 bg-white rounded-xl shadow">
       {(loading || syncLoading) && <Loader />}
-      <ZoomControls zoomIn={zoomIn} zoomOut={zoomOut} resetZoom={resetZoom} uploadMapImage={uploadMapImage} />
+      <ZoomControls
+        zoomIn={zoomIn}
+        zoomOut={zoomOut}
+        resetZoom={resetZoom}
+        uploadMapImage={uploadMapImage}
+      />
 
       <ShapeToolbar
         selectedTool={selectedTool}
@@ -180,8 +184,8 @@ const MapViewer = ({ token }) => {
           {
             if (!selectedId) return;
             const shape = shapes.find((s) => s.id === selectedId);
-            if (shape?.type === "polygon") {
-              // Polygon ke liye fill alag se update karo, stroke alag
+            if (shape?.type === "polygon" || shape?.type === "custom") {
+              // Polygon aur Custom ke liye fill alag se update karo, stroke alag
               updateShape(selectedId, { fill: color });
             } else {
               updateShape(selectedId, { fill: color, stroke: color });
@@ -292,7 +296,7 @@ const MapViewer = ({ token }) => {
             return;
           }
 
-          if (selectedTool === "polygon") {
+          if (selectedTool === "polygon" || selectedTool === "custom") {
             if (polygonPoints.length >= 4) {
               const firstX = polygonPoints[0];
               const firstY = polygonPoints[1];
@@ -300,6 +304,7 @@ const MapViewer = ({ token }) => {
               const dist = Math.hypot(x - firstX, y - firstY);
               if (dist <= snapDist) {
                 addPolygon(polygonPoints, {
+                  type: selectedTool === "custom" ? "custom" : "polygon",
                   stroke: "#2b6cb0",
                   fill: "rgba(43,108,176,0.15)",
                 });
@@ -337,7 +342,7 @@ const MapViewer = ({ token }) => {
             return;
           }
 
-          if (selectedTool === "polygon") {
+          if (selectedTool === "polygon" || selectedTool === "custom") {
             setMousePos({ x, y });
             return;
           }
@@ -433,7 +438,7 @@ const MapViewer = ({ token }) => {
             lineJoin="round"
           />
         )}
-        {selectedTool === "polygon" &&
+        {(selectedTool === "polygon" || selectedTool === "custom") &&
           polygonPoints.length >= 2 &&
           mousePos && (
             <>

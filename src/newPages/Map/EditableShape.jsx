@@ -24,7 +24,10 @@ const EditableShape = ({
   // when a drawing tool is active we don't want shapes to steal
   // single-clicks; also polygons should require a double-click to
   // become selected even in 'normal' mode.
-  const allowSingleClick = currentTool === "normal" && shape.type !== "polygon";
+  const allowSingleClick =
+    currentTool === "normal" &&
+    shape.type !== "polygon" &&
+    shape.type !== "custom";
 
   useEffect(() => {
     if (isSelected && trRef.current && shapeRef.current) {
@@ -190,7 +193,7 @@ const EditableShape = ({
     );
   }
 
-  if (shape.type === "polygon") {
+  if (shape.type === "polygon" || shape.type === "custom") {
     return (
       <>
         <Line

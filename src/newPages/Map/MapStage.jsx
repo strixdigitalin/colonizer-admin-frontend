@@ -46,23 +46,32 @@ const MapStage = ({
           // only treat left button
           if (e.evt.button !== 0) return;
           const pointer = stageRef.current.getPointerPosition();
+          // Apply inverse transformation to account for zoom and pan
+          const transformedX = (pointer.x - position.x) / scale;
+          const transformedY = (pointer.y - position.y) / scale;
           if (onStageMouseDown) {
             // forward target so caller can decide what to do
-            onStageMouseDown(pointer.x, pointer.y, e.target);
+            onStageMouseDown(transformedX, transformedY, e.target);
           }
         }}
         onMouseMove={(e) => {
           if (e.evt.button !== 0) return;
           const pointer = stageRef.current.getPointerPosition();
+          // Apply inverse transformation to account for zoom and pan
+          const transformedX = (pointer.x - position.x) / scale;
+          const transformedY = (pointer.y - position.y) / scale;
           if (onStageMouseMove) {
-            onStageMouseMove(pointer.x, pointer.y, e.target);
+            onStageMouseMove(transformedX, transformedY, e.target);
           }
         }}
         onMouseUp={(e) => {
           if (e.evt.button !== 0) return;
           const pointer = stageRef.current.getPointerPosition();
+          // Apply inverse transformation to account for zoom and pan
+          const transformedX = (pointer.x - position.x) / scale;
+          const transformedY = (pointer.y - position.y) / scale;
           if (onStageMouseUp) {
-            onStageMouseUp(pointer.x, pointer.y, e.target);
+            onStageMouseUp(transformedX, transformedY, e.target);
           }
         }}
       >

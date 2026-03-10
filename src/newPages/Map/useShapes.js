@@ -65,16 +65,16 @@ const useShapes = () => {
     //   ),
     // );
     setShapes((prev) => {
-    const updated = prev.map((shape) =>
-      shape.id === id ? { ...shape, ...newAttrs } : shape
-    );
+      const updated = prev.map((shape) =>
+        shape.id === id ? { ...shape, ...newAttrs } : shape,
+      );
 
-    // isBackground wale shapes ko array ke start mein rakho (render mein pehle = neeche)
-    return [
-      ...updated.filter((s) => s.isBackground),
-      ...updated.filter((s) => !s.isBackground),
-    ];
-  });
+      // isBackground wale shapes ko array ke start mein rakho (render mein pehle = neeche)
+      return [
+        ...updated.filter((s) => s.isBackground),
+        ...updated.filter((s) => !s.isBackground),
+      ];
+    });
   };
 
   const copySelected = (id) => {
@@ -184,7 +184,7 @@ const useShapes = () => {
       id: uuidv4(),
       x: 0,
       y: 0,
-      type: "polygon",
+      type: options.type || "polygon",
       points,
       stroke: options.stroke || "#2b6cb0",
       strokeWidth: options.strokeWidth || 2,
