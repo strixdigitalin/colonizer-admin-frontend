@@ -194,6 +194,16 @@ const EditableShape = ({
   }
 
   if (shape.type === "polygon" || shape.type === "custom") {
+    // compute bounding box from points for centered text
+    const xs = shape.points.filter((_, i) => i % 2 === 0);
+    const ys = shape.points.filter((_, i) => i % 2 !== 0);
+    const minX = Math.min(...xs);
+    const maxX = Math.max(...xs);
+    const minY = Math.min(...ys);
+    const maxY = Math.max(...ys);
+    const bboxW = maxX - minX;
+    const bboxH = maxY - minY;
+
     return (
       <>
         <Line
@@ -205,6 +215,9 @@ const EditableShape = ({
           fill={shape.fill}
           // fill={resolvedFill}
           draggable
+          x={shape.x || 0}
+          y={shape.y || 0}
+          rotation={shape.rotation || 0}
           // draggable={!shape.isBackground}
           // listening={!shape.isBackground}
           // opacity={shape.isBackground ? 0.8 : 1}
@@ -216,6 +229,21 @@ const EditableShape = ({
           }}
           onDblClick={() => {
             onSelect(shape.id);
+            const txt = window.prompt(
+              "Add text to shape",
+              shape.linkedText?.text || "",
+            );
+            if (txt != null) {
+              updateShape(shape.id, {
+                linkedText: {
+                  ...shape.linkedText,
+                  text: txt,
+                  fontSize: shape.linkedText?.fontSize || 16,
+                  fontFamily: shape.linkedText?.fontFamily || "Arial",
+                  fill: shape.linkedText?.fill || "#000",
+                },
+              });
+            }
           }}
           onDragEnd={(e) => {
             const dx = e.target.x();
@@ -235,9 +263,30 @@ const EditableShape = ({
               points: newPoints,
               x: node.x(),
               y: node.y(),
+              rotation: node.rotation(),
             });
           }}
         />
+
+        {shape.linkedText && shape.linkedText.text && (
+          <Text
+            text={shape.linkedText.text}
+            x={shape.x || 0}
+            y={shape.y || 0}
+            offsetX={-minX}
+            offsetY={-minY}
+            width={bboxW}
+            height={bboxH}
+            rotation={shape.rotation || 0}
+            fontSize={Math.max(8, Math.min(bboxW, bboxH) * 0.25)}
+            fontFamily={shape.linkedText.fontFamily || "Arial"}
+            fill={shape.linkedText.fill || "#000"}
+            align="center"
+            verticalAlign="middle"
+            listening={false}
+          />
+        )}
+
         {isSelected && (
           <Transformer
             ref={trRef}
