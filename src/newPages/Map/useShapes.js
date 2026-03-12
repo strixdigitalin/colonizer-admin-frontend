@@ -225,6 +225,56 @@ const useShapes = () => {
     setSelectedId(id);
   };
 
+  // Break a single rect into a rows×cols grid of sub-rects in-place
+  const breakGridRect = (id, cols, rows, startNum = 1) => {
+    setShapes((prev) => {
+      const shape = prev.find((s) => s.id === id);
+      if (!shape || shape.type !== "rect") return prev;
+
+      const subW = shape.width / cols;
+      const subH = shape.height / rows;
+      const rotRad = ((shape.rotation || 0) * Math.PI) / 180;
+      const cosR = Math.cos(rotRad);
+      const sinR = Math.sin(rotRad);
+
+      const newShapes = [];
+      let num = startNum;
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+          const localX = col * subW;
+          const localY = row * subH;
+          const rotX = localX * cosR - localY * sinR;
+          const rotY = localX * sinR + localY * cosR;
+
+          newShapes.push({
+            id: uuidv4(),
+            type: "rect",
+            x: shape.x + rotX,
+            y: shape.y + rotY,
+            width: subW,
+            height: subH,
+            fill: shape.fill,
+            cornerRadius: shape.cornerRadius || 0,
+            rotation: shape.rotation || 0,
+            linkedText: {
+              text: String(num),
+              fontSize: 16,
+              fontFamily: "Arial",
+              fill: "#000",
+              offsetX: 0,
+              offsetY: 10,
+            },
+          });
+          num++;
+        }
+      }
+
+      const filtered = prev.filter((s) => s.id !== id);
+      return [...filtered, ...newShapes];
+    });
+    setSelectedId(null);
+  };
+
   return {
     shapes,
     addShape,
@@ -244,6 +294,7 @@ const useShapes = () => {
     updateLinkedText,
     removeLinkedText,
     addPolygon,
+    breakGridRect,
   };
 };
 

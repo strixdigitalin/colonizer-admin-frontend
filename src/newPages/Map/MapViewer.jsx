@@ -41,6 +41,7 @@ const MapViewer = ({ token }) => {
     updateLinkedText,
     removeLinkedText,
     addPolygon,
+    breakGridRect,
   } = useShapes();
 
   const {
@@ -221,8 +222,12 @@ const MapViewer = ({ token }) => {
           };
           updateShape(selectedId, {
             zoneType,
-            fill: ZONE_COLORS[zoneType], // color change basis on the zone
+            fill: ZONE_COLORS[zoneType],
           });
+        }}
+        onBreakGrid={(cols, rows, startNum) => {
+          if (!selectedId) return;
+          breakGridRect(selectedId, cols, rows, startNum);
         }}
       />
 

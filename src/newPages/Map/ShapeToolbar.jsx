@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const ZONE_COLORS = {
   park: "rgba(34,197,94,0.3)",
   road: "rgba(156,163,175,0.5)",
@@ -26,7 +28,12 @@ const ShapeToolbar = ({
   onMapImageToggle,
   onSendToBack,
   onZoneTypeChange,
+  onBreakGrid,
 }) => {
+  const [breakCols, setBreakCols] = useState(2);
+  const [breakRows, setBreakRows] = useState(2);
+  const [breakStartNum, setBreakStartNum] = useState(1);
+
   return (
     <div className="flex flex-wrap gap-2 mb-3 items-center">
       {/* ── Tool Buttons ── */}
@@ -71,7 +78,7 @@ const ShapeToolbar = ({
               : "px-3 py-1 bg-gray-200"
           }
         >
-          Polygon
+          Boundary
         </button>
 
         {/* <button
@@ -303,6 +310,53 @@ const ShapeToolbar = ({
             }}
             className="w-10 h-8 p-0 border-0"
           />
+        </div>
+      )}
+
+      {/* ── Break Grid (rect only) ── */}
+      {selectedShape?.type === "rect" && (
+        <div className="flex items-center gap-2 ml-4 border-l pl-4 flex-wrap">
+          <label className="text-sm font-medium text-orange-600">Break Grid:</label>
+          <label className="text-sm">Cols:</label>
+          <input
+            type="number"
+            min="1"
+            max="100"
+            value={breakCols}
+            onChange={(e) =>
+              setBreakCols(Math.max(1, parseInt(e.target.value) || 1))
+            }
+            className="w-14 px-2 py-1 border rounded text-sm"
+          />
+          <label className="text-sm">Rows:</label>
+          <input
+            type="number"
+            min="1"
+            max="100"
+            value={breakRows}
+            onChange={(e) =>
+              setBreakRows(Math.max(1, parseInt(e.target.value) || 1))
+            }
+            className="w-14 px-2 py-1 border rounded text-sm"
+          />
+          <label className="text-sm">Start#:</label>
+          <input
+            type="number"
+            min="0"
+            value={breakStartNum}
+            onChange={(e) =>
+              setBreakStartNum(Math.max(0, parseInt(e.target.value) || 1))
+            }
+            className="w-16 px-2 py-1 border rounded text-sm"
+          />
+          <button
+            onClick={() =>
+              onBreakGrid && onBreakGrid(breakCols, breakRows, breakStartNum)
+            }
+            className="px-3 py-1 bg-orange-500 text-white rounded text-sm font-medium hover:bg-orange-600"
+          >
+            Break
+          </button>
         </div>
       )}
 
