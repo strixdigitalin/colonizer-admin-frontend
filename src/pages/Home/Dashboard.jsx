@@ -1,126 +1,109 @@
 import Header from "../../components/designs/TopComponents/Header";
 import { useEffect, useState } from "react";
-// import axios from "axios";
-// import { API_URI } from "../../utils/Global/main";
+import axios from "axios";
+import { API_URI } from "../../utils/Global/main";
 
-import { 
-    FaShoppingCart, 
-    FaUsers, 
-    FaCheckCircle, 
-    FaClock, 
+import {
+    FaUsers,
+    FaBuilding,
+    FaMapMarkedAlt,
+    FaCheckCircle,
+    FaClock,
     FaRupeeSign,
-    FaBookOpen
+    FaExclamationCircle,
+    FaHandshake,
 } from "react-icons/fa";
 
 const Dashboard = ({ token, routepath }) => {
 
     const [statsData, setStatsData] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        //  API CALL COMMENTED (API abhi exist nahi karti)
-        /*
         const getData = async () => {
             try {
-                const res = await axios.get(`${API_URI}/api/dashboard/stats`, {
-                    headers: { Authorization: `Bearer ${token}` }
+                const res = await axios.get(`${API_URI}/api/v1/dashboard/stats`, {
+                    headers: { Authorization: `Bearer ${token}` },
                 });
                 setStatsData(res.data?.data);
             } catch (error) {
-                console.log("Dashboard API Error:", error);
+                console.error("Dashboard API Error:", error);
+            } finally {
+                setLoading(false);
             }
         };
         getData();
-        */
+    }, [token]);
 
-        const dummyData = {
-            users: {
-                total: 1200,
-                newToday: 18
-            },
-            orders: {
-                total: 560,
-                completed: 420,
-                pending: 140,
-                todayOrders: 22,
-                todayRevenue: 15400,
-                monthlyRevenue: 325000
-            },
-            courses: {
-                total: 35,
-                active: 28
-            }
-        };
-
-        setStatsData(dummyData);
-    }, []);
-
-    if (!statsData) {
+    if (loading) {
         return <div className="p-10 text-center text-gray-500">Loading Dashboard...</div>;
     }
 
-    const { users, orders, courses } = statsData;
+    if (!statsData) {
+        return <div className="p-10 text-center text-red-500">Failed to load dashboard data.</div>;
+    }
 
     const stats = [
         {
-            title: "Total Users",
-            value: users.total,
+            title: "Total Customers",
+            value: statsData.totalCustomers,
             icon: <FaUsers size={26} />,
-            color: "bg-green-500"
+            color: "bg-green-500",
         },
         {
             title: "Total Brokers",
-            value: users.newToday,
-            icon: <FaUsers size={26} />,
-            color: "bg-blue-500"
+            value: statsData.totalBrokers,
+            icon: <FaHandshake size={26} />,
+            color: "bg-blue-500",
         },
         {
-            title: "Total Colonys",
-            value: orders.total,
-            icon: <FaShoppingCart size={26} />,
-            color: "bg-purple-500"
+            title: "Total Colonies",
+            value: statsData.totalColonies,
+            icon: <FaBuilding size={26} />,
+            color: "bg-purple-500",
         },
-        // {
-        //     title: "Completed Orders",
-        //     value: orders.completed,
-        //     icon: <FaCheckCircle size={26} />,
-        //     color: "bg-teal-500"
-        // },
-        // {
-        //     title: "Pending Orders",
-        //     value: orders.pending,
-        //     icon: <FaClock size={26} />,
-        //     color: "bg-yellow-500"
-        // },
-        // {
-        //     title: "Today's Orders",
-        //     value: orders.todayOrders,
-        //     icon: <FaShoppingCart size={26} />,
-        //     color: "bg-indigo-500"
-        // },
-        // {
-        //     title: "Today's Revenue",
-        //     value: `₹ ${orders.todayRevenue.toLocaleString()}`,
-        //     icon: <FaRupeeSign size={26} />,
-        //     color: "bg-red-500"
-        // },
-        // {
-        //     title: "Monthly Revenue",
-        //     value: `₹ ${orders.monthlyRevenue.toLocaleString()}`,
-        //     icon: <FaRupeeSign size={26} />,
-        //     color: "bg-orange-500"
-        // },
-        // {
-        //     title: "Total Courses",
-        //     value: courses.total,
-        //     icon: <FaBookOpen size={26} />,
-        //     color: "bg-gray-700"
-        // },
-        // {
-        //     title: "Active Courses",
-        //     value: courses.active,
-        //     icon: <FaBookOpen size={26} />,
-        //     color: "bg-green-600"
-        // }
+        {
+            title: "Total Plots",
+            value: statsData.totalPlots,
+            icon: <FaMapMarkedAlt size={26} />,
+            color: "bg-indigo-500",
+        },
+        {
+            title: "Available Plots",
+            value: statsData.availablePlots,
+            icon: <FaCheckCircle size={26} />,
+            color: "bg-teal-500",
+        },
+        {
+            title: "Hold Plots",
+            value: statsData.holdPlots,
+            icon: <FaClock size={26} />,
+            color: "bg-yellow-500",
+        },
+        {
+            title: "Sold Plots",
+            value: statsData.soldPlots,
+            icon: <FaCheckCircle size={26} />,
+            color: "bg-orange-500",
+        },
+        {
+            title: "Pending Hold Requests",
+            value: statsData.pendingHoldRequests,
+            icon: <FaExclamationCircle size={26} />,
+            color: "bg-red-500",
+        },
+        {
+            title: "Total Revenue Collected",
+            value: `₹ ${statsData.totalRevenue.toLocaleString("en-IN")}`,
+            icon: <FaRupeeSign size={26} />,
+            color: "bg-green-700",
+        },
+        {
+            title: "Total Due Amount",
+            value: `₹ ${statsData.totalDue.toLocaleString("en-IN")}`,
+            icon: <FaRupeeSign size={26} />,
+            color: "bg-gray-600",
+        },
     ];
 
     return (

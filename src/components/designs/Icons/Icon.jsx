@@ -1,5 +1,5 @@
 import React from 'react'
-import logo from '../../../utils/Images/logo.svg';
+import logo from '../../../utils/Images/logo.png';
 
 const Icon = ({ extendedClasses }) => {
     return (
