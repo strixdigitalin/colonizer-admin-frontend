@@ -2,14 +2,10 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_URI } from "../../utils/Global/main";
 import Header from "../../components/designs/TopComponents/Header";
-import NormalTable from "../../components/designs/Tables/NormalTable";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate, useParams } from "react-router-dom";
 import UpdatePlotDialog from "./UpdatePlotDialog";
-import { DocumentScanner } from "@mui/icons-material";
-
+import BulkUpdatePlotDialog from "./BulkUpdatePlotDialog";
+import PlotTable from "./PlotTable";
 
 const StatusBadge = ({ status }) => {
   const config = {
@@ -28,12 +24,12 @@ const StatusBadge = ({ status }) => {
 
 const ShapeTypeBadge = ({ type }) => {
   const colors = {
-    rect:     "bg-blue-100 text-blue-700",
-    custom:   "bg-purple-100 text-purple-700",
-    rounded:  "bg-indigo-100 text-indigo-700",
-    polygon:  "bg-orange-100 text-orange-700",
-    line:     "bg-gray-100 text-gray-700",
-    text:     "bg-pink-100 text-pink-700",
+    rect:    "bg-blue-100 text-blue-700",
+    custom:  "bg-purple-100 text-purple-700",
+    rounded: "bg-indigo-100 text-indigo-700",
+    polygon: "bg-orange-100 text-orange-700",
+    line:    "bg-gray-100 text-gray-700",
+    text:    "bg-pink-100 text-pink-700",
   };
   return (
     <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${colors[type] || "bg-gray-100 text-gray-600"}`}>
@@ -42,14 +38,13 @@ const ShapeTypeBadge = ({ type }) => {
   );
 };
 
-
-
 const PlotList = ({ token }) => {
   const navigate = useNavigate();
   const { colonyId } = useParams();
-  const [data, setData]           = useState([]);
-  const [loading, setLoading]     = useState(false);
-  const [editPlot, setEditPlot]   = useState(null);
+  const [data, setData]                   = useState([]);
+  const [loading, setLoading]             = useState(false);
+  const [editPlot, setEditPlot]           = useState(null);
+  const [bulkPlots, setBulkPlots]         = useState(null); // array when open
 
   const fetchPlots = async () => {
     try {
@@ -61,19 +56,21 @@ const PlotList = ({ token }) => {
 
       const plots = res.data?.data || [];
 
-      const updatedData = plots.filter((plot) =>["rect", "custom", "rounded"].includes(plot.shapeData?.type)).map((plot, index) => ({
-        ...plot,
-        index: index + 1,
-        statusBadge:    <StatusBadge status={plot.status} />,
-        shapeTypeBadge: <ShapeTypeBadge type={plot.shapeData?.type} />,
-        plotSizeDisplay:     plot.plotSize     ? `${plot.plotSize} sq ft` : "—",
-        pricePerSqftDisplay: plot.pricePerSqft ? `₹${plot.pricePerSqft}` : "—",
-        totalPriceDisplay:   plot.totalPrice   ? `₹${plot.totalPrice.toLocaleString()}` : "—",
-        facingDisplay:       plot.facing       || "—",
-        plotAreaDisplay:     plot.plotArea     || "—",
-        createdAt: new Date(plot.createdAt).toLocaleDateString(),
-        plotNumber:plot?.shapeData?.linkedText?.text||""
-      }));
+      const updatedData = plots
+        .filter((plot) => ["rect", "custom", "rounded"].includes(plot.shapeData?.type))
+        .map((plot, index) => ({
+          ...plot,
+          index: index + 1,
+          statusBadge:         <StatusBadge status={plot.status} />,
+          shapeTypeBadge:      <ShapeTypeBadge type={plot.shapeData?.type} />,
+          plotSizeDisplay:     plot.plotSize     ? `${plot.plotSize} sq ft` : "—",
+          pricePerSqftDisplay: plot.pricePerSqft ? `₹${plot.pricePerSqft}` : "—",
+          totalPriceDisplay:   plot.totalPrice   ? `₹${plot.totalPrice.toLocaleString()}` : "—",
+          facingDisplay:       plot.facing       || "—",
+          plotAreaDisplay:     plot.plotArea     || "—",
+          createdAt:           new Date(plot.createdAt).toLocaleDateString(),
+          plotNumber:          plot?.shapeData?.linkedText?.text || "",
+        }));
 
       setData(updatedData);
     } catch (error) {
@@ -87,72 +84,37 @@ const PlotList = ({ token }) => {
     if (colonyId) fetchPlots();
   }, [colonyId]);
 
-  const handleEdit = (plot) => setEditPlot(plot);
-
-  const handleDelete = async (plot) => {
-    if (window.confirm(`Are you sure you want to delete Plot #${plot.plotNumber}?`)) {
-      try {
-        await axios.delete(
-          `${API_URI}/api/v1/plots/owner/delete/${plot._id}`,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        fetchPlots();
-      } catch (error) {
-        console.error("Error deleting plot:", error);
-      }
-    }
-  };
-
-  const plotTableStructure = [
-    { header: "S.NO",        accessKey: "index" },
-    { header: "Status",      accessKey: "statusBadge" },
-    { header: "Shape Type",  accessKey: "shapeTypeBadge" },
-    { header: "Plot No.",    accessKey: "plotNumber" },
-    { header: "Area",        accessKey: "plotAreaDisplay" },
-    { header: "Size",        accessKey: "plotSizeDisplay" },
-    { header: "Facing",      accessKey: "facingDisplay" },
-    { header: "Price/Sqft",  accessKey: "pricePerSqftDisplay" },
-    { header: "Total Price", accessKey: "totalPriceDisplay" },
-    { header: "Created At",  accessKey: "createdAt" },
-  ];
-
-  const actions = [
-    {
-      name: "Edit",
-      handleClick: handleEdit,
-      icon: <EditIcon />,
-    },
-    {
-      name: "Documents",
-      handleClick: (plot)=>navigate(`/plot/documents/${plot?._id}`),
-      icon: <DocumentScanner />,
-    },
-  ];
-
   return (
     <div className="my-2 flex-1 md:mr-2 md:p-6 pt-[60px] px-1 md:rounded-2xl bg-white border shadow overflow-y-auto">
-      <Header
-        title={"Plots"}
-        addTitle={"Plot"}
-        add={false}
-      />
+      <Header title={"Plots"} addTitle={"Plot"} add={false} />
 
       <div className="md:my-8 my-4 mx-auto md:mx-4">
-        <NormalTable
-          tableStructure={plotTableStructure}
+        <PlotTable
           data={data}
           isLoading={loading}
-          options={actions}
+          onEdit={(plot) => setEditPlot(plot)}
+          onDocuments={(plot) => navigate(`/plot/documents/${plot?._id}`)}
+          onBulkUpdate={(plots) => setBulkPlots(plots)}
         />
       </div>
 
-      {/* Update Dialog */}
+      {/* Single Edit Dialog */}
       {editPlot && (
         <UpdatePlotDialog
           plot={editPlot}
           token={token}
           onClose={() => setEditPlot(null)}
           onSuccess={fetchPlots}
+        />
+      )}
+
+      {/* Bulk Update Dialog */}
+      {bulkPlots && (
+        <BulkUpdatePlotDialog
+          selectedPlots={bulkPlots}
+          token={token}
+          onClose={() => setBulkPlots(null)}
+          onSuccess={() => { setBulkPlots(null); fetchPlots(); }}
         />
       )}
     </div>

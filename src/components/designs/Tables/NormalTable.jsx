@@ -44,7 +44,10 @@ const NormalTable = ({ data, tableStructure, isLoading, options=[] }) => {
                         >
                             {
                                 renderedCellValue ?
-                                    new Date(renderedCellValue).toDateString()
+                                    (() => {
+                                        const d = new Date(renderedCellValue);
+                                        return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()).toDateString();
+                                    })()
                                     :
                                     'N/A'
                             }
