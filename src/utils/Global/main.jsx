@@ -1,4 +1,4 @@
-export const API_URI = 'https://colonizer-backend.vercel.app';
+export const API_URI = 'https://colonizer.rahul-gautam.com';
 // export const API_URI = "http://localhost:8080";
 
 export const updatedData = (data, page, pageSize) => {
