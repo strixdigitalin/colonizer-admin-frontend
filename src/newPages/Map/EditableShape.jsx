@@ -181,6 +181,7 @@ const EditableShape = ({
         {isSelected && (
           <Transformer
             ref={trRef}
+            rotateEnabled
             enabledAnchors={[
               "top-left",
               "top-right",
@@ -209,7 +210,7 @@ const EditableShape = ({
         <Line
           points={shape.points}
           ref={shapeRef}
-          stroke={shape.stroke}
+          stroke={shape.type === "custom" ? "transparent" : shape.stroke}
           strokeWidth={shape.strokeWidth || 2}
           closed={true}
           fill={shape.fill}
@@ -271,14 +272,12 @@ const EditableShape = ({
         {shape.linkedText && shape.linkedText.text && (
           <Text
             text={shape.linkedText.text}
-            x={shape.x || 0}
-            y={shape.y || 0}
-            offsetX={-minX}
-            offsetY={-minY}
+            x={(shape.x || 0) + minX}
+            y={(shape.y || 0) + minY}
             width={bboxW}
             height={bboxH}
             rotation={shape.rotation || 0}
-            fontSize={Math.max(8, Math.min(bboxW, bboxH) * 0.25)}
+            fontSize={Math.max(4, Math.min(bboxW, bboxH) * 0.25)}
             fontFamily={shape.linkedText.fontFamily || "Arial"}
             fill={shape.linkedText.fill || "#000"}
             align="center"
@@ -296,6 +295,10 @@ const EditableShape = ({
               "top-right",
               "bottom-left",
               "bottom-right",
+              "middle-left",
+              "middle-right",
+              "top-center",
+              "bottom-center",
             ]}
           />
         )}

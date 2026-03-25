@@ -111,7 +111,7 @@ const ShapeToolbar = ({
         >
           Rect Draw
         </button> */}
-        {/* <button
+        <button
           onClick={() => setSelectedTool("text")}
           className={
             selectedTool === "text"
@@ -120,7 +120,7 @@ const ShapeToolbar = ({
           }
         >
           Text
-        </button> */}
+        </button>
         <button
           onClick={() => setSelectedTool(null)}
           className="px-3 py-1 bg-gray-300 text-black"
