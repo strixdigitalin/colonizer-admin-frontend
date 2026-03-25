@@ -141,7 +141,12 @@ const MapViewer = ({ token }) => {
       const meta = isMac ? e.metaKey : e.ctrlKey;
 
       if (e.key === "Delete" || e.key === "Backspace") {
-        if (selectedId) removeShape(selectedId);
+        const tag = document.activeElement?.tagName?.toLowerCase();
+        const isEditing =
+          tag === "input" ||
+          tag === "textarea" ||
+          document.activeElement?.isContentEditable;
+        if (!isEditing && selectedId) removeShape(selectedId);
       }
 
       if ((meta && e.key === "c") || (meta && e.key === "C")) {

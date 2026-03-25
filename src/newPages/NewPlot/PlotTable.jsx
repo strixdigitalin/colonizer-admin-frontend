@@ -27,7 +27,8 @@ const PlotTable = ({ data, isLoading, onEdit, onDocuments, onBulkUpdate }) => {
   const [sortKey, setSortKey]         = useState("index");
   const [sortDir, setSortDir]         = useState("asc");
   const [page, setPage]               = useState(1);
-  const PAGE_SIZE = 15;
+  // const PAGE_SIZE = 15;
+  const PAGE_SIZE = 100;
 
   /* ── Tab counts ── */
   const counts = useMemo(() => ({
