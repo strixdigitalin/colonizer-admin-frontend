@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Header from "../../components/designs/TopComponents/Header";
 import axios from "axios";
 import { API_URI } from "../../utils/Global/main";
@@ -9,6 +9,7 @@ const ColonyAddEdit = ({ token, routepath }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEdit = Boolean(id);
+  const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -23,6 +24,9 @@ const ColonyAddEdit = ({ token, routepath }) => {
     isActive: true,
   });
 
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [existingImage, setExistingImage] = useState(null);
   const [loading, setLoading] = useState(false);
 
   // Fetch Single Colony (Edit Mode)
@@ -52,6 +56,10 @@ const ColonyAddEdit = ({ token, routepath }) => {
             description: colony?.description || "",
             isActive: colony?.isActive ?? true,
           });
+
+          if (colony?.colonyMap) {
+            setExistingImage(colony.colonyMap);
+          }
         } catch (error) {
           console.error("Error fetching colony:", error);
         } finally {
@@ -72,16 +80,24 @@ const ColonyAddEdit = ({ token, routepath }) => {
     }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    setExistingImage(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const {
-      name,
-      location,
-      totalPlots,
-      availablePlots,
-      pricePerSqft,
-    } = formData;
+    const { name, location, totalPlots, availablePlots, pricePerSqft } = formData;
 
     if (!name || !location || !totalPlots || !availablePlots || !pricePerSqft) {
       alert("Required fields are missing");
@@ -96,18 +112,19 @@ const ColonyAddEdit = ({ token, routepath }) => {
     try {
       setLoading(true);
 
+      const payload = new FormData();
+      Object.entries(formData).forEach(([key, val]) => payload.append(key, val));
+      if (imageFile) payload.append("image", imageFile);
+
+      const headers = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      };
+
       if (isEdit) {
-        await axios.put(
-          `${API_URI}/api/v1/colony/owner/update/${id}`,
-          formData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await axios.put(`${API_URI}/api/v1/colony/owner/update/${id}`, payload, { headers });
       } else {
-        await axios.post(
-          `${API_URI}/api/v1/colony/create`,
-          formData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        await axios.post(`${API_URI}/api/v1/colony/create`, payload, { headers });
       }
 
       navigate(-1);
@@ -118,6 +135,8 @@ const ColonyAddEdit = ({ token, routepath }) => {
       setLoading(false);
     }
   };
+
+  const displayImage = imagePreview || existingImage;
 
   return (
     <div className="my-2 flex-1 md:mr-2 md:p-6 pt-[60px] px-1 md:rounded-2xl bg-white border shadow overflow-y-auto">
@@ -224,6 +243,57 @@ const ColonyAddEdit = ({ token, routepath }) => {
             className="w-full border px-3 py-2 rounded-lg"
             rows={3}
           />
+        </div>
+
+        {/* Colony Image Upload */}
+        <div>
+          <label className="block mb-2 font-medium">Colony Image</label>
+
+          {displayImage ? (
+            <div className="relative w-fit">
+              <img
+                src={displayImage}
+                alt="Colony"
+                className="w-64 h-40 object-cover rounded-lg border"
+              />
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                className="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-0.5 rounded"
+              >
+                Remove
+              </button>
+            </div>
+          ) : (
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="w-64 h-40 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className="text-sm text-gray-500">Click to upload image</span>
+              <span className="text-xs text-gray-400 mt-1">JPG, PNG, GIF</span>
+            </div>
+          )}
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/gif"
+            onChange={handleImageChange}
+            className="hidden"
+          />
+
+          {!displayImage && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="mt-2 text-sm text-blue-600 underline"
+            >
+              Browse file
+            </button>
+          )}
         </div>
 
         {/* Active Toggle */}

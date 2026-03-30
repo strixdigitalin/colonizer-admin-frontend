@@ -40,8 +40,8 @@ const useMapImage = (colonyId, token) => {
       );
 
       const imageUrl =
-        res.data?.data?.colonyBaseMap ||
-        res.data?.data?.colonyMap;
+        res.data?.data?.colonyMap ||
+        res.data?.data?.colonyBaseMap;
 
       if (imageUrl) {
         const img = new window.Image();
