@@ -55,23 +55,51 @@ const MapViewer = ({ token }) => {
   React.useEffect(() => {
     const load = async () => {
       const loadedShapes = await loadPlots();
-      if (loadedShapes.length > 0) {
-        setShapes(loadedShapes);
+
+      // Load text shapes from localStorage (text shapes are not saved to backend)
+      let localTextShapes = [];
+      try {
+        const saved = localStorage.getItem(`colony-${colonyId}-text-shapes`);
+        if (saved) {
+          localTextShapes = JSON.parse(saved).filter(
+            (s) => s.type === "text" && !/^[a-f\d]{24}$/i.test(s.id),
+          );
+        }
+      } catch (e) {}
+
+      const allShapes = [...loadedShapes, ...localTextShapes];
+      if (allShapes.length > 0) {
+        setShapes(allShapes);
       }
     };
     load();
   }, [colonyId]);
 
   const handleSave = async () => {
-    const success = await bulkSave(shapes);
+    // Separate text shapes (saved locally) from plot shapes (saved to backend)
+    const textShapes = shapes.filter((s) => s.type === "text");
+    const plotShapes = shapes.filter((s) => s.type !== "text");
+
+    // Save text shapes to localStorage
+    try {
+      localStorage.setItem(
+        `colony-${colonyId}-text-shapes`,
+        JSON.stringify(textShapes),
+      );
+    } catch (e) {}
+
+    const success = await bulkSave(plotShapes);
     if (success) {
       toast.success("Save successful");
     } else {
       toast.error("Save failed");
     }
+
     const loadedShapes = await loadPlots();
-    if (loadedShapes.length > 0) {
-      setShapes(loadedShapes);
+    // Merge backend shapes with local text shapes
+    const allShapes = [...loadedShapes, ...textShapes];
+    if (allShapes.length > 0) {
+      setShapes(allShapes);
     }
   };
 
@@ -315,8 +343,11 @@ const MapViewer = ({ token }) => {
               if (dist <= snapDist) {
                 addPolygon(polygonPoints, {
                   type: selectedTool === "custom" ? "custom" : "polygon",
-                  stroke: "#2b6cb0",
-                  fill: "rgba(43,108,176,0.15)",
+                  stroke: selectedTool === "custom" ? "transparent" : "#2b6cb0",
+                  fill:
+                    selectedTool === "custom"
+                      ? "lightgreen"
+                      : "rgba(43,108,176,0.15)",
                 });
                 // restore selection only if click not on empty area
                 if (!isStage && previousSelected) {
