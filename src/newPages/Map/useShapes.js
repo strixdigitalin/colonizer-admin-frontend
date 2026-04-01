@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const useShapes = () => {
   const [shapes, setShapes] = useState([]);
-  const [selectedTool, _setSelectedTool] = useState("normal");
+  const [selectedTool, _setSelectedTool] = useState(null);
   const [selectedId, setSelectedId] = useState(null);
   const [copiedShape, setCopiedShape] = useState(null);
 

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { Rect, Transformer, Line, Circle, Text } from "react-konva";
 
 const STATUS_COLORS = {
@@ -14,7 +14,6 @@ const EditableShape = ({
   onSelect,
   updateShape,
   removeShape,
-  copyShape,
 }) => {
   const shapeRef = useRef();
   const trRef = useRef();
@@ -69,7 +68,7 @@ const EditableShape = ({
               y: e.target.y(),
             });
           }}
-          onTransformEnd={(e) => {
+          onTransformEnd={() => {
             const node = shapeRef.current;
             const scaleX = node.scaleX();
             const scaleY = node.scaleY();
@@ -163,9 +162,8 @@ const EditableShape = ({
           onDragEnd={(e) => {
             updateShape(shape.id, { x: e.target.x(), y: e.target.y() });
           }}
-          onTransformEnd={(e) => {
+          onTransformEnd={() => {
             const node = shapeRef.current;
-            const scaleX = node.scaleX();
             const scaleY = node.scaleY();
             // apply scale to font size
             const newFontSize = Math.max(5, shape.fontSize * scaleY);
@@ -203,9 +201,9 @@ const EditableShape = ({
           y={shape.y}
           width={shape.width}
           height={shape.height}
-          fill={resolvedFill || "lightgreen"}
-          stroke="#2b6cb0"
-          strokeWidth={1}
+          fill="transparent"
+          stroke="transparent"
+          strokeWidth={0}
           cornerRadius={shape.cornerRadius || 0}
           rotation={shape.rotation || 0}
           ref={shapeRef}
@@ -338,7 +336,7 @@ const EditableShape = ({
             const dy = e.target.y();
             updateShape(shape.id, { x: dx, y: dy });
           }}
-          onTransformEnd={(e) => {
+          onTransformEnd={() => {
             const node = shapeRef.current;
             const scaleX = node.scaleX();
             const scaleY = node.scaleY();
@@ -438,7 +436,7 @@ const EditableShape = ({
         onDragEnd={(e) => {
           updateShape(shape.id, { x: e.target.x(), y: e.target.y() });
         }}
-        onTransformEnd={(e) => {
+        onTransformEnd={() => {
           const node = shapeRef.current;
           const scaleX = node.scaleX();
           const scaleY = node.scaleY();
