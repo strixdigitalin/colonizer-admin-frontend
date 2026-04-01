@@ -32,6 +32,7 @@ const usePlotSync = (colonyId, token) => {
           status: plot.status,
           facing: plot.facing,
         },
+        type: plot.shapeData.type=="text"?"recttext":plot.shapeData.type,
       }));
 
       return shapes;
@@ -61,8 +62,9 @@ const usePlotSync = (colonyId, token) => {
             status: status || "available",
             shapeData: {
               ...shapeData,
-              type: shapeData.type || "rect",
+              type: shapeData.type=="recttext"?"text":shapeData.type || "rect",
             },
+
             ...(_plotData || {}),
           };
         });

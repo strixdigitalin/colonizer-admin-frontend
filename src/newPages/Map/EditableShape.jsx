@@ -194,6 +194,91 @@ const EditableShape = ({
     );
   }
 
+  if (shape.type === "recttext") {
+    return (
+      <>
+        <Rect
+          id={shape.id}
+          x={shape.x}
+          y={shape.y}
+          width={shape.width}
+          height={shape.height}
+          fill="transparent"
+          stroke="transparent"
+          ref={shapeRef}
+          draggable
+          onClick={() => {
+            if (allowSingleClick) onSelect(shape.id);
+          }}
+          onTap={() => {
+            if (allowSingleClick) onSelect(shape.id);
+          }}
+          onDblClick={() => {
+            onSelect(shape.id);
+            const newText = window.prompt("Edit text", shape.text || "");
+            if (newText != null) {
+              if (newText.trim() === "") {
+                removeShape();
+              } else {
+                updateShape(shape.id, { text: newText });
+              }
+            }
+          }}
+          onDragEnd={(e) => {
+            updateShape(shape.id, { x: e.target.x(), y: e.target.y() });
+          }}
+          onTransformEnd={(e) => {
+            const node = shapeRef.current;
+            const scaleX = node.scaleX();
+            const scaleY = node.scaleY();
+
+            node.scaleX(1);
+            node.scaleY(1);
+            updateShape(shape.id, {
+              x: node.x(),
+              y: node.y(),
+              width: Math.max(5, node.width() * scaleX),
+              height: Math.max(5, node.height() * scaleY),
+              rotation: node.rotation(),
+            });
+          }}
+        />
+
+        <Text
+          text={shape.text}
+          x={shape.x}
+          y={shape.y}
+          width={shape.width}
+          height={shape.height}
+          fontSize={shape.fontSize}
+          fontFamily={shape.fontFamily}
+          fill={shape.textFill || "#000"}
+          align="center"
+          verticalAlign="middle"
+          rotation={shape.rotation}
+          listening={false}
+        />
+
+        {isSelected && (
+          <Transformer
+            ref={trRef}
+            rotateEnabled
+            enabledAnchors={[
+              "top-left",
+              "top-right",
+              "bottom-left",
+              "bottom-right",
+              "middle-left",
+              "middle-right",
+              "top-center",
+              "bottom-center",
+            ]}
+          />
+        )}
+      </>
+    );
+  }
+
   if (shape.type === "polygon" || shape.type === "custom") {
     // compute bounding box from points for centered text
     const xs = shape.points.filter((_, i) => i % 2 === 0);

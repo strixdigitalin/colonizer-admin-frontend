@@ -36,6 +36,7 @@ const MapViewer = ({ token }) => {
     pasteCopied,
     addFreehand,
     addRect,
+    addRectText,
     addText,
     addLinkedText,
     updateLinkedText,
@@ -213,19 +214,22 @@ const MapViewer = ({ token }) => {
         onPaste={() => pasteCopied()}
         onExport={exportCanvas}
         selectedShape={shapes.find((s) => s.id === selectedId)}
-        onColorChange={(color) =>
-          // selectedId && updateShape(selectedId, { fill: color, stroke: color })
-          {
-            if (!selectedId) return;
-            const shape = shapes.find((s) => s.id === selectedId);
-            if (shape?.type === "polygon" || shape?.type === "custom") {
-              // Polygon aur Custom ke liye fill alag se update karo, stroke alag
-              updateShape(selectedId, { fill: color });
-            } else {
-              updateShape(selectedId, { fill: color, stroke: color });
-            }
+        onColorChange={(color) => {
+          if (!selectedId) return;
+          const shape = shapes.find((s) => s.id === selectedId);
+          if (!shape) return;
+
+          if (shape.type === "polygon" || shape.type === "custom") {
+            updateShape(selectedId, { fill: color });
+          } else if (shape.type === "text" || shape.type === "recttext") {
+            updateShape(selectedId, {
+              textFill: color,
+              fill: shape.type === "text" ? color : shape.fill,
+            });
+          } else {
+            updateShape(selectedId, { fill: color, stroke: color });
           }
-        }
+        }}
         onFontSizeChange={(size) =>
           selectedId && updateShape(selectedId, { fontSize: size })
         }
@@ -315,7 +319,7 @@ const MapViewer = ({ token }) => {
             return;
           }
 
-          if (selectedTool === "rect-draw") {
+          if (selectedTool === "rect-draw" || selectedTool === "recttext") {
             setRectStart({ x, y });
             setRectPreview({ x, y, width: 0, height: 0 });
             return;
@@ -433,12 +437,23 @@ const MapViewer = ({ token }) => {
             const rh = Math.abs(rectPreview.height);
             // add rectangle via useShapes helper
             if (rw > 2 && rh > 2) {
-              // import addRect from hooks
-              try {
-                addRect(rx, ry, rw, rh, { fill: "lightgreen" });
-              } catch (err) {
-                // fallback: use addShape at top-left
-                addShape(rx, ry);
+              if (selectedTool === "recttext") {
+                const text = window.prompt("Enter text", "Text");
+                if (text != null && text.trim() !== "") {
+                  addRectText(rx, ry, rw, rh, text, {
+                    fill: "#000",
+                    fontSize: 20,
+                  });
+                } else {
+                  // empty text should not get created
+                }
+              } else {
+                try {
+                  addRect(rx, ry, rw, rh, { fill: "lightgreen" });
+                } catch (err) {
+                  // fallback: use addShape at top-left
+                  addShape(rx, ry);
+                }
               }
             }
 

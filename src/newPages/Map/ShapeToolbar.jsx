@@ -111,10 +111,20 @@ const ShapeToolbar = ({
         >
           Rect Draw
         </button> */}
-        <button
+        {/* <button
           onClick={() => setSelectedTool("text")}
           className={
             selectedTool === "text"
+              ? "bg-blue-500 text-white px-3 py-1"
+              : "px-3 py-1 bg-gray-200"
+          }
+        >
+          Text
+        </button> */}
+        <button
+          onClick={() => setSelectedTool("recttext")}
+          className={
+            selectedTool === "recttext"
               ? "bg-blue-500 text-white px-3 py-1"
               : "px-3 py-1 bg-gray-200"
           }
@@ -173,7 +183,13 @@ const ShapeToolbar = ({
           <label className="text-sm">Color:</label>
           <input
             type="color"
-            value={selectedShape?.fill || selectedShape?.stroke || "#7dd3fc"}
+            value={
+              selectedShape?.type === "text"
+                ? selectedShape?.fill || "#000"
+                : selectedShape?.type === "recttext"
+                  ? selectedShape?.textFill || "#000"
+                  : selectedShape?.fill || selectedShape?.stroke || "#7dd3fc"
+            }
             onChange={(e) => onColorChange && onColorChange(e.target.value)}
             className="w-10 h-8 p-0 border-0"
           />
@@ -181,7 +197,8 @@ const ShapeToolbar = ({
       )}
 
       {/* ── Text Options ── */}
-      {selectedShape?.type === "text" && (
+      {(selectedShape?.type === "text" ||
+        selectedShape?.type === "recttext") && (
         <div className="flex items-center gap-2 ml-4 border-l pl-4">
           <label className="text-sm">Font:</label>
           <select
@@ -316,7 +333,9 @@ const ShapeToolbar = ({
       {/* ── Break Grid (rect only) ── */}
       {selectedShape?.type === "rect" && (
         <div className="flex items-center gap-2 ml-4 border-l pl-4 flex-wrap">
-          <label className="text-sm font-medium text-orange-600">Break Grid:</label>
+          <label className="text-sm font-medium text-orange-600">
+            Break Grid:
+          </label>
           <label className="text-sm">Cols:</label>
           <input
             type="number"

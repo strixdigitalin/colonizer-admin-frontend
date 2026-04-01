@@ -32,6 +32,17 @@ const useShapes = () => {
         stroke: "#2b6cb0",
         strokeWidth: 3,
       };
+    } else if (selectedTool === "recttext") {
+      newShape = {
+        ...base,
+        type: "recttext",
+        width: 120,
+        height: 80,
+        text: "Text",
+        fontSize: 20,
+        fontFamily: "Arial",
+        textFill: "#000",
+      };
     } else {
       // default to rect-like
       newShape = {
@@ -156,6 +167,24 @@ const useShapes = () => {
     };
     setShapes((prev) => [...prev, txt]);
     setSelectedId(txt.id);
+  };
+
+  const addRectText = (x, y, width, height, text = "Text", options = {}) => {
+    const rectText = {
+      id: uuidv4(),
+      x,
+      y,
+      type: "recttext",
+      width: Math.max(1, width),
+      height: Math.max(1, height),
+      text: text || "",
+      fontSize: options.fontSize || 20,
+      fontFamily: options.fontFamily || "Arial",
+      textFill: options.fill || "#000",
+      rotation: options.rotation || 0,
+    };
+    setShapes((prev) => [...prev, rectText]);
+    setSelectedId(rectText.id);
   };
 
   const addLinkedText = (shapeId, text = "", options = {}) => {
@@ -289,6 +318,7 @@ const useShapes = () => {
     pasteCopied,
     addFreehand,
     addRect,
+    addRectText,
     addText,
     addLinkedText,
     updateLinkedText,
