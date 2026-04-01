@@ -301,6 +301,7 @@ const MapViewer = ({ token }) => {
             return;
           }
 
+
           // if no tool is chosen we do nothing; 'normal' still draws a rect-like shape
           if (!selectedTool) {
             return;
@@ -319,9 +320,17 @@ const MapViewer = ({ token }) => {
             return;
           }
 
-          if (selectedTool === "rect-draw" || selectedTool === "recttext") {
+          if (selectedTool === "rect-draw") {
             setRectStart({ x, y });
             setRectPreview({ x, y, width: 0, height: 0 });
+            return;
+          }
+
+          if (selectedTool === "recttext") {
+            // Only create on empty canvas — if target has an id it's an existing shape
+            if (!target.id || !target.id()) {
+              addRectText(x, y, 120, 80, "Text", { fontSize: 20 });
+            }
             return;
           }
 
@@ -437,23 +446,10 @@ const MapViewer = ({ token }) => {
             const rh = Math.abs(rectPreview.height);
             // add rectangle via useShapes helper
             if (rw > 2 && rh > 2) {
-              if (selectedTool === "recttext") {
-                const text = window.prompt("Enter text", "Text");
-                if (text != null && text.trim() !== "") {
-                  addRectText(rx, ry, rw, rh, text, {
-                    fill: "#000",
-                    fontSize: 20,
-                  });
-                } else {
-                  // empty text should not get created
-                }
-              } else {
-                try {
-                  addRect(rx, ry, rw, rh, { fill: "lightgreen" });
-                } catch (err) {
-                  // fallback: use addShape at top-left
-                  addShape(rx, ry);
-                }
+              try {
+                addRect(rx, ry, rw, rh, { fill: "lightgreen" });
+              } catch (err) {
+                addShape(rx, ry);
               }
             }
 

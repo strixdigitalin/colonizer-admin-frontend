@@ -203,8 +203,11 @@ const EditableShape = ({
           y={shape.y}
           width={shape.width}
           height={shape.height}
-          fill="transparent"
-          stroke="transparent"
+          fill={resolvedFill || "lightgreen"}
+          stroke="#2b6cb0"
+          strokeWidth={1}
+          cornerRadius={shape.cornerRadius || 0}
+          rotation={shape.rotation || 0}
           ref={shapeRef}
           draggable
           onClick={() => {
@@ -227,11 +230,10 @@ const EditableShape = ({
           onDragEnd={(e) => {
             updateShape(shape.id, { x: e.target.x(), y: e.target.y() });
           }}
-          onTransformEnd={(e) => {
+          onTransformEnd={() => {
             const node = shapeRef.current;
             const scaleX = node.scaleX();
             const scaleY = node.scaleY();
-
             node.scaleX(1);
             node.scaleY(1);
             updateShape(shape.id, {
@@ -245,17 +247,17 @@ const EditableShape = ({
         />
 
         <Text
-          text={shape.text}
           x={shape.x}
           y={shape.y}
           width={shape.width}
           height={shape.height}
-          fontSize={shape.fontSize}
-          fontFamily={shape.fontFamily}
+          text={shape.text}
+          fontSize={shape.fontSize || 20}
+          fontFamily={shape.fontFamily || "Arial"}
           fill={shape.textFill || "#000"}
           align="center"
           verticalAlign="middle"
-          rotation={shape.rotation}
+          rotation={shape.rotation || 0}
           listening={false}
         />
 

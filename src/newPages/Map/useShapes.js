@@ -38,6 +38,7 @@ const useShapes = () => {
         type: "recttext",
         width: 120,
         height: 80,
+        fill: "lightgreen",
         text: "Text",
         fontSize: 20,
         fontFamily: "Arial",
@@ -177,10 +178,11 @@ const useShapes = () => {
       type: "recttext",
       width: Math.max(1, width),
       height: Math.max(1, height),
+      fill: options.rectFill || "lightgreen",
       text: text || "",
       fontSize: options.fontSize || 20,
       fontFamily: options.fontFamily || "Arial",
-      textFill: options.fill || "#000",
+      textFill: options.textFill || "#000",
       rotation: options.rotation || 0,
     };
     setShapes((prev) => [...prev, rectText]);
